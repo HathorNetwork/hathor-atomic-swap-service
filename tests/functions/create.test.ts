@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Hathor Labs and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import { closeDbConnection, getDbConnection } from "@libs/db";
 import { cleanDatabase, generateApiEvent, generateHandlerContext } from "../utils";
 import { main as create } from "@functions/create/handler";
