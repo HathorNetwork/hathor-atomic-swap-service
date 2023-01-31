@@ -14,9 +14,6 @@ export default {
       http: {
         method: 'get',
         path: '/{proposalId}',
-        request: {
-
-        },
       },
     },
   ],

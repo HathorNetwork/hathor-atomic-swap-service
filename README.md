@@ -40,6 +40,13 @@ With these requirements above being met, run:
 npm run offline
 ```
 
+## Validating the generated serverless
+Since this project structures builds the `serverless.yml` file dynamically, it may be valuable to double-check
+the generated results should an error occur. This can be done with the following command:
+```shell
+npx serverless print --stage dev
+```
+
 # API Calls
 Once the application is running, it is possible to manage proposals using it:
 
