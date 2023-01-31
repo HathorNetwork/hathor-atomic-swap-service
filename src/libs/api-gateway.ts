@@ -9,7 +9,7 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult, Handler } from 'aws-l
 import type { FromSchema } from 'json-schema-to-ts';
 import { ServerlessMysql } from 'serverless-mysql';
 
-type ValidatedAPIGatewayProxyEvent<S> = Omit<APIGatewayProxyEvent, 'body'>
+export type ValidatedAPIGatewayProxyEvent<S> = Omit<APIGatewayProxyEvent, 'body'>
   & {
   body: FromSchema<S>,
   /**

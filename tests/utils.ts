@@ -43,7 +43,7 @@ export function generateHandlerContext(): Context {
 }
 
 // @ts-ignore
-export const generateApiEvent = (): unknown => {
+export const generateApiEvent = (): ValidatedAPIGatewayProxyEvent<unknown> => {
     const baseEvent = {
         "resource": "/",
         "path": "/",

@@ -7,6 +7,7 @@
 
 import type { AWS } from '@serverless/typescript';
 import create from '@functions/create';
+import get from '@functions/get';
 
 require('dotenv').config();
 
@@ -27,7 +28,7 @@ const serverlessConfiguration: AWS = {
     },
   },
   // import the function via paths
-  functions: { create },
+  functions: { create, get },
   package: { individually: true },
   custom: {
     esbuild: {
