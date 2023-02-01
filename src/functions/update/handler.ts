@@ -35,7 +35,7 @@ const update: ValidatedEventAPIGatewayProxyEvent<typeof updateProposalSchema> = 
   if (!dbProposal) {
     throw new LambdaError('Proposal not found', 'PROPOSAL_NOT_FOUND');
   }
-  if (hashedPassword !== dbProposal.hashedAutoPassword) {
+  if (hashedPassword !== dbProposal.hashedAuthPassword) {
     throw new LambdaError('Incorrect password', 'INCORRECT_PASSWORD');
   }
 

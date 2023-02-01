@@ -33,7 +33,7 @@ export interface IProposalSqlRow {
 
 export interface IGetProposalFromDb {
   id: string,
-  hashedAutoPassword: string,
+  hashedAuthPassword: string,
   partialTx: string,
   signatures: string,
   timestamp: string,
@@ -56,10 +56,10 @@ export async function getProposalFromDb(mySql: ServerlessMysql, proposalId: stri
   const sqlRow = sqlRows[0];
   const jsObject: IGetProposalFromDb = {
     id: sqlRow.proposal,
-    hashedAutoPassword: sqlRow.hashed_auth_password,
+    hashedAuthPassword: sqlRow.hashed_auth_password,
     partialTx: sqlRow.partial_tx,
     signatures: sqlRow.signatures,
-    timestamp: sqlRow.updated_at,
+    timestamp: sqlRow.updated_at.toString(),
     version: sqlRow.version,
     history: [],
   };

@@ -7,6 +7,7 @@
 
 import { ServerlessMysql } from 'serverless-mysql';
 import { IGetProposalFromDb } from '@functions/get/service';
+import { MAX_HISTORY_LENGTH } from '@libs/constants';
 
 export interface IUpdateProposalDbInputs {
   partialTx: string,
@@ -22,7 +23,7 @@ export async function updateProposalOnDb(mySql: ServerlessMysql, current: IGetPr
     newHistory = [
       { partialTx: current.partialTx, timestamp: current.timestamp },
       ...current.history,
-    ];
+    ].slice(0, MAX_HISTORY_LENGTH);
   }
 
   const mySqlQuery = `UPDATE Proposals

@@ -26,12 +26,12 @@ const getProposal: ValidatedEventAPIGatewayProxyEvent<Object> = async (event) =>
   if (!dbProposal) {
     throw new LambdaError('Proposal not found', 'PROPOSAL_NOT_FOUND');
   }
-  if (hashedPassword !== dbProposal.hashedAutoPassword) {
+  if (hashedPassword !== dbProposal.hashedAuthPassword) {
     throw new LambdaError('Incorrect password', 'INCORRECT_PASSWORD');
   }
 
   const httpResponseObject = { ...dbProposal };
-  delete httpResponseObject.hashedAutoPassword; // Removing data not on http contract
+  delete httpResponseObject.hashedAuthPassword; // Removing data not on http contract
 
   return formatJSONResponse(httpResponseObject);
 };
