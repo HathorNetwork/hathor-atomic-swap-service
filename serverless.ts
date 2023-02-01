@@ -10,6 +10,7 @@
 import type { AWS } from '@serverless/typescript';
 import create from '@functions/create';
 import get from '@functions/get';
+import update from '@functions/update';
 
 require('dotenv').config();
 
@@ -36,7 +37,7 @@ const serverlessConfiguration: AWS = {
     },
   },
   // import the function via paths
-  functions: { create, get },
+  functions: { create, get, update },
   package: { individually: true },
   custom: {
     // eslint-disable-next-line no-template-curly-in-string

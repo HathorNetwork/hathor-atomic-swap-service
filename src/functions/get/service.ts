@@ -27,8 +27,8 @@ export interface IProposalSqlRow {
   partial_tx: string,
   signatures: string,
   history: string,
-  created_at: Date,
-  updated_at: Date,
+  created_at: string,
+  updated_at: string,
 }
 
 export interface IGetProposalFromDb {
@@ -36,9 +36,9 @@ export interface IGetProposalFromDb {
   hashedAutoPassword: string,
   partialTx: string,
   signatures: string,
-  timestamp: Date,
+  timestamp: string,
   version: number,
-  history: {partialTx: string, timestamp: number}[]
+  history: {partialTx: string, timestamp: string}[]
 }
 
 export async function getProposalFromDb(mySql: ServerlessMysql, proposalId: string) {
