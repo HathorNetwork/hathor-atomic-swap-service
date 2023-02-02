@@ -24,7 +24,35 @@ interface swapRequest extends middy.Request {
   error: LambdaError | Error,
 }
 
-const globalErrorHandler = () : MiddlewareObj => ({
+const globalOnErrorHandler = async (request: middy.Request) => {
+  // Close connections when a middleware has created them
+  if (request.event.mySql) {
+    await closeDbConnection(request.event.mySql);
+  }
+
+  let errorObj = request.error;
+  if (!errorObj || !errorObj.message) {
+    errorObj = new LambdaError(`Untreated error: ${errorObj}`);
+  }
+
+  const errorBody = {
+    code: 'UNKNOWN_ERROR',
+    errorMessage: errorObj.message,
+    stack: undefined,
+  };
+  if (errorObj instanceof LambdaError) {
+    errorBody.code = errorObj.code;
+  }
+  if (process.env.STAGE === 'local') {
+    errorBody.stack = errorObj.stack;
+  }
+  return {
+    statusCode: STATUS_CODE_TABLE[errorBody.code],
+    body: JSON.stringify(errorBody),
+  };
+};
+
+const sqlConnectionMiddleware = () : MiddlewareObj => ({
   // Adds the MySQL connection to the handler context
   before: async (request: swapRequest) => {
     request.event.mySql = await mySql;
@@ -33,31 +61,17 @@ const globalErrorHandler = () : MiddlewareObj => ({
   after: async (request: swapRequest) => {
     await closeDbConnection(request.event.mySql);
   },
-  onError: async (request: swapRequest) => {
-    await closeDbConnection(request.event.mySql);
-    let errorObj = request.error;
-    if (!errorObj || !errorObj.message) {
-      errorObj = new LambdaError(`Untreated error: ${errorObj}`);
-    }
-
-    const errorBody = {
-      code: 'UNKNOWN_ERROR',
-      errorMessage: errorObj.message,
-      stack: undefined,
-    };
-    if (errorObj instanceof LambdaError) {
-      errorBody.code = errorObj.code;
-    }
-    if (process.env.STAGE === 'local') {
-      errorBody.stack = errorObj.stack;
-    }
-    return {
-      statusCode: STATUS_CODE_TABLE[errorBody.code],
-      body: JSON.stringify(errorBody),
-    };
-  },
+  onError: globalOnErrorHandler,
 });
 
-export const middyfy = (handler) => middy(handler)
+const errorHandlerMiddleware = () : MiddlewareObj => ({
+  onError: globalOnErrorHandler,
+});
+
+export const wrapWithConnection = (handler) => middy(handler)
   .use(middyJsonBodyParser())
-  .use(globalErrorHandler());
+  .use(sqlConnectionMiddleware());
+
+export const wrapWithErrorHandler = (handler) => middy(handler)
+  .use(middyJsonBodyParser())
+  .use(errorHandlerMiddleware());

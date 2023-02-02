@@ -7,7 +7,7 @@
 
 import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { formatJSONResponse } from '@libs/api-gateway';
-import { middyfy } from '@libs/lambda';
+import { wrapWithConnection } from '@libs/lambda';
 
 import { ICreateProposalRequest } from '@models/create';
 import { createProposalOnDb } from '@services/proposals';
@@ -35,4 +35,4 @@ const create: ValidatedEventAPIGatewayProxyEvent<typeof createProposalSchema> = 
   });
 };
 
-export const main = middyfy(create);
+export const main = wrapWithConnection(create);
