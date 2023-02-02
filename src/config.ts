@@ -14,14 +14,14 @@ export default {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: '127.0.0.1',
-    port: process.env.DB_PORT || 3306,
+    port: process.env.DB_PORT,
   },
   test: {
     user: process.env.CI_DB_USERNAME,
     password: process.env.CI_DB_PASSWORD,
     database: process.env.CI_DB_NAME,
-    host: process.env.CI_DB_HOST || '127.0.0.1',
-    port: process.env.CI_DB_PORT || 3306,
+    host: process.env.CI_DB_HOST,
+    port: process.env.CI_DB_PORT,
   },
   production: {
     user: process.env.DB_USER,
