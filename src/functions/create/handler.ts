@@ -10,7 +10,7 @@ import { formatJSONResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
 
 import { ICreateProposalRequest } from '@models/create';
-import { createProposalOnDb } from '@functions/create/service';
+import { createProposalOnDb } from '@services/proposals';
 import { LambdaError } from '@libs/errors';
 import createProposalSchema from './schema';
 

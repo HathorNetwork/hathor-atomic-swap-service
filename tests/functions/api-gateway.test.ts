@@ -8,11 +8,11 @@
 import { closeDbConnection, getDbConnection } from "@libs/db";
 import { cleanDatabase, generateApiEvent, generateHandlerContext } from "../utils";
 import { main as create } from "@functions/create/handler";
-import * as service from "@functions/create/service";
+import * as proposalService from "@services/proposals";
 
 const mySql = getDbConnection();
 
-const dbMethodSpy = jest.spyOn(service, 'createProposalOnDb');
+const dbMethodSpy = jest.spyOn(proposalService, 'createProposalOnDb');
 
 describe('error handling', () => {
 

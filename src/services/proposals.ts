@@ -10,9 +10,9 @@ import { v4 } from 'uuid';
 import { hashPassword } from '@libs/util';
 
 export interface CreateProposalDbInputs {
-    authPassword: string;
-    partialTx: string;
-    expiresAt?: Date;
+  authPassword: string;
+  partialTx: string;
+  expiresAt?: Date;
 }
 
 export async function createProposalOnDb(mySql: ServerlessMysql, data: CreateProposalDbInputs) {
