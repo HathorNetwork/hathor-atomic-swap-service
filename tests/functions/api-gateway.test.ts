@@ -9,12 +9,14 @@ import { closeDbConnection, getDbConnection } from "@libs/db";
 import { cleanDatabase, generateApiEvent, generateHandlerContext } from "../utils";
 import { main as create } from "@functions/create/handler";
 import * as proposalService from "@services/proposals";
+import { wrapWithErrorHandler } from '../../src/libs/lambda';
+import { LambdaError } from '../../src/libs/errors';
 
 const mySql = getDbConnection();
 
 const dbMethodSpy = jest.spyOn(proposalService, 'createProposalOnDb');
 
-describe('error handling', () => {
+describe('connection wrapper handler', () => {
 
   beforeEach(async () => {
     await cleanDatabase(mySql);
@@ -116,5 +118,47 @@ describe('error handling', () => {
         code: 'UNKNOWN_ERROR',
         errorMessage: 'Untreated error: Badly formatted failure',
       });
+  })
+})
+
+describe('no-connection wrapper handler', () => {
+
+  it('should treat the response for a service failure', async () => {
+    const event = generateApiEvent();
+    const context = generateHandlerContext();
+
+    event['body'].authPassword = 'abc';
+
+    // Mock
+    dbMethodSpy.mockImplementationOnce(() => {
+      throw new Error('Service failure');
+    })
+
+    // The type checker does not recognize the event type correctly
+    // @ts-ignore
+    const response = await create(event, context)
+    expect(response.statusCode).toStrictEqual(500);
+    expect(JSON.parse(response.body))
+      .toStrictEqual(expect.objectContaining({
+        code: 'UNKNOWN_ERROR',
+        errorMessage: 'Service failure',
+      }));
+  })
+
+  it('should treat the response for a handler failure', async () => {
+    const testHandler = wrapWithErrorHandler(() => {
+      throw new LambdaError('Connectionless error', 'UNKNOWN_ERROR');
+    });
+
+    const event = generateApiEvent();
+    const context = generateHandlerContext();
+    const response = await testHandler(event, context);
+
+    expect(response.statusCode).toStrictEqual(500);
+    expect(JSON.parse(response.body))
+      .toStrictEqual(expect.objectContaining({
+        code: 'UNKNOWN_ERROR',
+        errorMessage: 'Connectionless error',
+      }));
   })
 })
