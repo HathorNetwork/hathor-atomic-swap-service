@@ -27,8 +27,6 @@ describe('create a proposal', () => {
 
         event['body'].authPassword = 'ab';
 
-        // The type checker does not recognize the event type correctly
-        // @ts-ignore
         const response = await create(event, context)
         expect(response.statusCode).toStrictEqual(400);
         expect(JSON.parse(response.body))
@@ -45,8 +43,6 @@ describe('create a proposal', () => {
         event['body'].partialTx = 'abc';
         event['body'].authPassword = 'abc';
 
-        // The type checker does not recognize the event type correctly
-        // @ts-ignore
         const response = await create(event, context)
         let body = JSON.parse(response.body);
 
