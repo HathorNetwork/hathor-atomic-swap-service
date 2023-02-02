@@ -11,7 +11,6 @@ import { middyfy } from '@libs/lambda';
 
 import { ICreateProposalRequest } from '@models/create';
 import { createProposalOnDb } from '@functions/create/service';
-import { hashString } from '@libs/util';
 import { LambdaError } from '@libs/errors';
 import createProposalSchema from './schema';
 
@@ -25,11 +24,9 @@ const create: ValidatedEventAPIGatewayProxyEvent<typeof createProposalSchema> = 
     throw new LambdaError('Invalid password', 'INVALID_PASSWORD');
   }
 
-  const hashedPassword = hashString(authPassword);
-
   const { proposalId } = await createProposalOnDb(event.mySql, {
     partialTx,
-    authPassword: hashedPassword,
+    authPassword,
   });
 
   return formatJSONResponse({

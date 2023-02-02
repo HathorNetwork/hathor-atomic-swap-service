@@ -31,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(64),
       allowNull: false,
     },
+    auth_password_salt: {
+      type: DataTypes.STRING(64),
+      allowNull: false,
+    },
     version: {
       type: DataTypes.TINYINT.UNSIGNED,
       allowNull: false,

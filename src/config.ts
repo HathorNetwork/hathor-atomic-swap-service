@@ -8,6 +8,7 @@
 require('dotenv').config();
 
 export default {
+  currentEnvironment: process.env.NODE_ENV,
   development: {
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,

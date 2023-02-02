@@ -7,6 +7,7 @@
 
 import { ServerlessMysql } from 'serverless-mysql';
 import { v4 } from 'uuid';
+import { hashPassword } from '@libs/util';
 
 export interface CreateProposalDbInputs {
     authPassword: string;
@@ -16,11 +17,13 @@ export interface CreateProposalDbInputs {
 
 export async function createProposalOnDb(mySql: ServerlessMysql, data: CreateProposalDbInputs) {
   const proposalId = v4();
+  const { hashedPass, salt } = hashPassword(data.authPassword);
+
   await mySql.query(
     `INSERT INTO Proposals
-    (proposal, partial_tx, hashed_auth_password)
-    VALUES(?, ?, ?);`,
-    [proposalId, data.partialTx, data.authPassword],
+    (proposal, partial_tx, hashed_auth_password, auth_password_salt)
+    VALUES(?, ?, ?, ?);`,
+    [proposalId, data.partialTx, hashedPass, salt],
   );
 
   return { proposalId };
