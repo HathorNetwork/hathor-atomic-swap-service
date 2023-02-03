@@ -10,7 +10,7 @@ export default {
   properties: {
     partialTx: { type: 'string' },
     authPassword: { type: 'string' },
-    expiresAt: { type: 'Date' },
+    expiresAt: { type: 'string' },
   },
   required: ['partialTx', 'authPassword'],
 } as const;

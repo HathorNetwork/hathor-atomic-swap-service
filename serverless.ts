@@ -16,7 +16,7 @@ const serverlessConfiguration: AWS = {
   plugins: ['serverless-esbuild', 'serverless-offline'],
   provider: {
     name: 'aws',
-    runtime: 'nodejs14.x',
+    runtime: 'nodejs18.x',
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
@@ -24,18 +24,25 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      NODE_ENV: '${env:NODE_ENV}',
+      DB_USER: '${env:DB_USER}',
+      DB_PASS: '${env:DB_PASS}',
+      DB_ENDPOINT: '${env:DB_ENDPOINT}',
+      DB_NAME: '${env:DB_NAME}',
+      DB_PORT: '${env:DB_PORT}',
     },
   },
   // import the function via paths
   functions: { create },
   package: { individually: true },
   custom: {
+    stage: '${opt:stage, "dev"}',
     esbuild: {
       bundle: true,
       minify: false,
       sourcemap: true,
       exclude: ['aws-sdk'],
-      target: 'node14',
+      target: 'node18',
       define: { 'require.resolve': undefined },
       platform: 'node',
       concurrency: 10,
