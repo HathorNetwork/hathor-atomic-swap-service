@@ -5,8 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
-import { formatJSONResponse } from '@libs/api-gateway';
+import { formatJSONResponse, IValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { wrapWithConnection } from '@libs/lambda';
 
 import { ICreateProposalRequest } from '@models/create';
@@ -14,11 +13,11 @@ import { createProposalOnDb } from '@services/proposals';
 import { LambdaError } from '@libs/errors';
 import createProposalSchema from './schema';
 
-const create: ValidatedEventAPIGatewayProxyEvent<typeof createProposalSchema> = async (event) => {
+const create: IValidatedEventAPIGatewayProxyEvent<typeof createProposalSchema> = async (event) => {
   const {
     partialTx,
     authPassword,
-  } = event.body as ICreateProposalRequest;
+  } = event.body as unknown as ICreateProposalRequest;
     // XXX: This is just to implement the error handling, but the schema should do this validation
   if (authPassword.length < 3) {
     throw new LambdaError('Invalid password', 'INVALID_PASSWORD');
