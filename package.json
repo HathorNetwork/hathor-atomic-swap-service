@@ -5,6 +5,7 @@
   "main": "serverless.ts",
   "scripts": {
     "offline": "serverless offline start",
+    "validate": "npm run lint && jest",
     "test": "jest",
     "lint": "eslint src/ --ext .ts",
     "lint-fix": "eslint src/ --ext .ts --fix"

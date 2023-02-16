@@ -7,7 +7,7 @@
 
 import { ServerlessMysql } from "serverless-mysql";
 import { Context } from "aws-lambda";
-import { ValidatedAPIGatewayProxyEvent } from '../src/libs/api-gateway';
+import { IValidatedAPIGatewayProxyEvent } from '../src/libs/api-gateway';
 
 export const cleanDatabase = async (mysql: ServerlessMysql): Promise<void> => {
     const TABLES = [
@@ -44,7 +44,7 @@ export function generateHandlerContext(): Context {
 }
 
 // @ts-ignore
-export const generateApiEvent = (): ValidatedAPIGatewayProxyEvent => {
+export const generateApiEvent = (): IValidatedAPIGatewayProxyEvent => {
     const baseEvent = {
         "resource": "/",
         "path": "/",
