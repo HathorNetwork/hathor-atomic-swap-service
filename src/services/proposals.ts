@@ -20,9 +20,11 @@ export async function createProposalOnDb(mySql: ServerlessMysql, data: CreatePro
   const { hashedPass, salt } = hashPassword(data.authPassword);
 
   await mySql.query(
-    `INSERT INTO proposals
-    (proposal, partial_tx, hashed_auth_password, auth_password_salt)
-    VALUES(?, ?, ?, ?);`,
+    `INSERT INTO proposals (proposal
+                                , partial_tx
+                                , hashed_auth_password
+                                , auth_password_salt)
+              VALUES(?, ?, ?, ?);`,
     [proposalId, data.partialTx, hashedPass, salt],
   );
 
