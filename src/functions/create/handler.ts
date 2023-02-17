@@ -18,7 +18,6 @@ const create: IValidatedEventAPIGatewayProxyEvent<typeof createProposalSchema> =
     partialTx,
     authPassword,
   } = event.body as unknown as ICreateProposalRequest;
-    // XXX: This is just to implement the error handling, but the schema should do this validation
   if (authPassword.length < 3) {
     throw new LambdaError('Invalid password', 'INVALID_PASSWORD');
   }
