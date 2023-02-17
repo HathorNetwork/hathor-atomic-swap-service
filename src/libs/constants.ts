@@ -17,7 +17,7 @@
  * NIST recommends at least 10,000 iterations (https://pages.nist.gov/800-63-3/sp800-63b.html#sec5),
  * @see Comment above before changing this value
  */
-export const HASH_ITERATIONS = 10000;
+export const HASH_ITERATIONS = 1000;
 
 /**
  * Size of the key to hash the password
