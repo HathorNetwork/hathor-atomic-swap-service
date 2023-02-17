@@ -11,7 +11,7 @@ import { IValidatedAPIGatewayProxyEvent } from '../src/libs/api-gateway';
 
 export const cleanDatabase = async (mysql: ServerlessMysql): Promise<void> => {
     const TABLES = [
-        'Proposals',
+        'proposals',
     ];
     await mysql.query('SET FOREIGN_KEY_CHECKS = 0');
     for (const table of TABLES) {

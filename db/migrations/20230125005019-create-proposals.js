@@ -1,7 +1,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Proposals', {
+    await queryInterface.createTable('proposals', {
       proposal: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -9,6 +9,10 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
       },
       hashed_auth_password: {
+        type: Sequelize.STRING(64),
+        allowNull: false,
+      },
+      auth_password_salt: {
         type: Sequelize.STRING(64),
         allowNull: false,
       },
@@ -40,6 +44,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Proposals');
+    await queryInterface.dropTable('proposals');
   },
 };
