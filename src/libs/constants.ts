@@ -24,3 +24,7 @@ export const HASH_ITERATIONS = 1000;
  * @see Comment above before changing this value
  */
 export const HASH_KEY_SIZE = 256;
+
+export const AUTHPASSWORD_HEADER_KEY = 'X-Auth-Password';
+
+export const MAX_HISTORY_LENGTH = 4;

@@ -1,0 +1,6 @@
+{
+  "headers": {
+    "Content-Type": "application/json",
+    "X-Auth-Password": "abc"
+  }
+}

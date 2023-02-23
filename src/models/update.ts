@@ -5,13 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export interface ICreateProposalRequest {
+export interface IUpdateProposalRequest {
     partialTx: string;
-    authPassword: string;
-    expiresAt?: string;
-}
-
-export interface ICreateProposalResponse {
-    success: boolean;
-    id: string;
+    signatures?: string;
+    version: number;
 }
