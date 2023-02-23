@@ -56,9 +56,16 @@ export interface IGetProposalFromDb {
 
 export async function getProposalFromDb(mySql: ServerlessMysql, proposalId: string) {
   const sqlRows: IProposalSqlRow[] = await mySql.query(
-    `SELECT proposal, hashed_auth_password, auth_password_salt, version, partial_tx, signatures, history, updated_at 
-          FROM proposals
-          WHERE proposal = ?`,
+    `SELECT proposal
+                 , hashed_auth_password
+                 , auth_password_salt
+                 , version
+                 , partial_tx
+                 , signatures
+                 , history
+                 , updated_at 
+            FROM proposals
+            WHERE proposal = ?`,
     [proposalId],
   );
 

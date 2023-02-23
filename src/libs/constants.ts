@@ -15,6 +15,8 @@
  * Number of iterations to execute when hashing the password
  *
  * NIST recommends at least 10,000 iterations (https://pages.nist.gov/800-63-3/sp800-63b.html#sec5),
+ * but this consumes too much time and resources. 1000 iterations was found to be a reasonable balance
+ * between security and performance, as it is a value also tried and tested on the lib.
  * @see Comment above before changing this value
  */
 export const HASH_ITERATIONS = 1000;
@@ -25,4 +27,7 @@ export const HASH_ITERATIONS = 1000;
  */
 export const HASH_KEY_SIZE = 256;
 
+/**
+ * Name of the header that should be present when interacting with endpoints that get/update proposal data
+ */
 export const AUTHPASSWORD_HEADER_KEY = 'X-Auth-Password';
