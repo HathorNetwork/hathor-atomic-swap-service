@@ -8,7 +8,7 @@
 export interface ICreateProposalRequest {
     partialTx: string;
     authPassword: string;
-    expiresAt?: Date;
+    expiresAt?: string;
 }
 
 export interface ICreateProposalResponse {

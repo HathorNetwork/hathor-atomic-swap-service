@@ -6,7 +6,7 @@
  */
 
 import { ServerlessMysql } from "serverless-mysql";
-import { Context } from "aws-lambda";
+import { APIGatewayProxyEvent, Context } from "aws-lambda";
 import { IValidatedAPIGatewayProxyEvent } from '../src/libs/api-gateway';
 
 export const cleanDatabase = async (mysql: ServerlessMysql): Promise<void> => {
@@ -145,7 +145,7 @@ export const generateApiEvent = (): IValidatedAPIGatewayProxyEvent => {
         },
         "body": null,
         "isBase64Encoded": false
-    }
+    } as unknown as APIGatewayProxyEvent
     return {
         ...baseEvent,
         body: {},
