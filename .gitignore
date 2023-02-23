@@ -1,0 +1,31 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# esbuild directories
+.esbuild
+.eslintcache
+
+# IDEs
+.idea
+.vscode
+
+# code coverage directories
+coverage
+
+# env variables
+.env
+.env.*
+
+# open files
+*.swp
+*.swo
+
+# Local database
+db.sqlite3
+
+# Helper tools
+wallaby.js
