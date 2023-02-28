@@ -8,7 +8,7 @@
 import middy, { MiddlewareObj } from '@middy/core';
 import middyJsonBodyParser from '@middy/http-json-body-parser';
 import { closeDbConnection, getDbConnection } from '@libs/db';
-import { LambdaError, STATUS_CODE_TABLE } from '@libs/errors';
+import { ApiError, LambdaError, STATUS_CODE_TABLE } from '@libs/errors';
 import { ServerlessMysql } from 'serverless-mysql';
 
 const mySql = getDbConnection();
@@ -36,12 +36,12 @@ const globalOnErrorHandler = async (request: middy.Request) => {
   }
 
   const errorBody = {
-    code: 'UNKNOWN_ERROR',
+    code: ApiError.UnknownError,
     errorMessage: errorObj.message,
     stack: undefined,
   };
   if (errorObj instanceof LambdaError) {
-    errorBody.code = errorObj.code;
+    errorBody.code = errorObj.code as ApiError;
   }
   if (process.env.STAGE === 'local') {
     errorBody.stack = errorObj.stack;

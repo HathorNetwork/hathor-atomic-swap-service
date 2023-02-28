@@ -10,7 +10,7 @@ import { wrapWithConnection } from '@libs/lambda';
 
 import { ICreateProposalRequest } from '@models/create';
 import { createProposalOnDb } from '@services/proposals';
-import { LambdaError } from '@libs/errors';
+import { ApiError, LambdaError } from '@libs/errors';
 import createProposalSchema from './schema';
 
 const create: IValidatedEventAPIGatewayProxyEvent<typeof createProposalSchema> = async (event) => {
@@ -19,7 +19,7 @@ const create: IValidatedEventAPIGatewayProxyEvent<typeof createProposalSchema> =
     authPassword,
   } = event.body as unknown as ICreateProposalRequest;
   if (authPassword.length < 3) {
-    throw new LambdaError('Invalid password', 'INVALID_PASSWORD');
+    throw new LambdaError('Invalid password', ApiError.InvalidPassword);
   }
 
   const { proposalId } = await createProposalOnDb(event.mySql, {

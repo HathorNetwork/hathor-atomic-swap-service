@@ -8,7 +8,7 @@
 import { ServerlessMysql } from 'serverless-mysql';
 import { v4 } from 'uuid';
 import { hashPassword } from '@libs/util';
-import { LambdaError } from '@libs/errors';
+import { ApiError, LambdaError } from '@libs/errors';
 
 export interface CreateProposalDbInputs {
   authPassword: string;
@@ -78,7 +78,7 @@ export async function getProposalFromDb(mySql: ServerlessMysql, proposalId: stri
     return { dbProposal: null, dbProposalPasswordData: null };
   }
   if (sqlRows.length > 1) {
-    throw new LambdaError('Duplicate proposal ids found', 'DUPLICATE_PROPOSAL_ID');
+    throw new LambdaError('Duplicate proposal ids found', ApiError.DuplicateProposalId);
   }
 
   const sqlRow = sqlRows[0];
