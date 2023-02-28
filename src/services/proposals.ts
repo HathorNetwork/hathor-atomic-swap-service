@@ -101,6 +101,7 @@ export async function getProposalFromDb(mySql: ServerlessMysql, proposalId: stri
       // TODO: Implement a logger here to avoid using just the console
       // eslint-disable-next-line no-console
       console.error(`Unable to parse history for ${proposalId}`);
+      // TODO: Implement call to Alerts Manager as well
     }
   }
 
