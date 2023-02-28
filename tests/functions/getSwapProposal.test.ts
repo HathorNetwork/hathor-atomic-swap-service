@@ -7,7 +7,7 @@
 import { closeDbConnection, getDbConnection } from '../../src/libs/db';
 import { cleanDatabase, generateApiEvent, generateHandlerContext } from '../utils';
 import { AUTHPASSWORD_HEADER_KEY } from '../../src/libs/constants';
-import { main as get } from "@functions/get/handler";
+import { main as get } from "@functions/getSwapProposal/handler";
 import { createProposalOnDb } from '@services/proposals';
 
 const mySql = getDbConnection();

@@ -6,8 +6,8 @@
  */
 
 import type { AWS } from '@serverless/typescript';
-import create from '@functions/create';
-import get from '@functions/get';
+import create from '@functions/createSwapProposal';
+import get from '@functions/getSwapProposal';
 
 require('dotenv').config();
 
