@@ -112,6 +112,6 @@ describe('getProposalFromDb', () => {
     } as unknown as ServerlessMysql;
 
     await expect(getProposalFromDb(mockedSql, 'mockId'))
-      .rejects.toThrowError('Duplicate proposal ids found');
+      .rejects.toThrowError('Multiple proposals found for id: mockId');
   });
 })

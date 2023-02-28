@@ -78,7 +78,7 @@ export async function getProposalFromDb(mySql: ServerlessMysql, proposalId: stri
     return { dbProposal: null, dbProposalPasswordData: null };
   }
   if (sqlRows.length > 1) {
-    throw new LambdaError('Duplicate proposal ids found', ApiError.DuplicateProposalId);
+    throw new LambdaError(`Multiple proposals found for id: ${proposalId}`, ApiError.DuplicateProposalId);
   }
 
   const sqlRow = sqlRows[0];
