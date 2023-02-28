@@ -83,4 +83,35 @@ describe('getProposalFromDb', () => {
 
     // TODO: When a logger is implemented, spy it and add a call assertion here
   })
+
+  it('should throw on more than one result', async () => {
+    const mockedSql = {
+      query: jest.fn().mockImplementation((): IProposalSqlRow[] => {
+        return [{
+          proposal: 'mockedProposalId',
+          hashed_auth_password: '123',
+          auth_password_salt: '234',
+          version: 0,
+          partial_tx: 'bce',
+          signatures: 'ced',
+          history: '[{"partialTx":"abc1", "timestamp": "02-dec"}]',
+          created_at: '01-dec',
+          updated_at: '03-dec',
+        }, {
+          proposal: 'mockedProposalId',
+          hashed_auth_password: '234',
+          auth_password_salt: '345',
+          version: 1,
+          partial_tx: 'cde',
+          signatures: 'def',
+          history: '[{"partialTx":"bcd1", "timestamp": "03-dec"}]',
+          created_at: '02-dec',
+          updated_at: '04-dec',
+        }]
+      })
+    } as unknown as ServerlessMysql;
+
+    await expect(getProposalFromDb(mockedSql, 'mockId'))
+      .rejects.toThrowError('Duplicate proposal ids found');
+  });
 })
