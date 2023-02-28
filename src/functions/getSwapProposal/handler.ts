@@ -21,20 +21,15 @@ const getProposal: IValidatedEventAPIGatewayProxyEvent<Object> = async (event) =
   }
 
   const proposalId = event.pathParameters.proposalId;
-  const dbProposal = await getProposalFromDb(event.mySql, proposalId);
+  const { dbProposal, dbProposalPasswordData } = await getProposalFromDb(event.mySql, proposalId);
   if (!dbProposal) {
     throw new LambdaError('Proposal not found', 'PROPOSAL_NOT_FOUND');
   }
-  if (!validatePassword(authPassword, dbProposal.hashedAuthPassword, dbProposal.authPasswordSalt)) {
+  if (!validatePassword(authPassword, dbProposalPasswordData.hashedAuthPassword, dbProposalPasswordData.authPasswordSalt)) {
     throw new LambdaError('Incorrect password', 'INCORRECT_PASSWORD');
   }
 
-  const httpResponseObject = { ...dbProposal };
-  // Removing authentication data
-  delete httpResponseObject.hashedAuthPassword;
-  delete httpResponseObject.authPasswordSalt;
-
-  return formatJSONResponse(httpResponseObject);
+  return formatJSONResponse(dbProposal);
 };
 
 export const main = wrapWithConnection(getProposal);

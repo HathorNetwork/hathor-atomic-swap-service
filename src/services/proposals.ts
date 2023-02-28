@@ -43,15 +43,18 @@ export interface IProposalSqlRow {
   updated_at: string,
 }
 
-export interface IGetProposalFromDb {
+export interface IDbProposal {
   id: string,
-  hashedAuthPassword: string,
-  authPasswordSalt: string,
   partialTx: string,
   signatures: string,
   timestamp: string,
   version: number,
   history: {partialTx: string, timestamp: string}[]
+}
+
+export interface IDbProposalPasswordData {
+  hashedAuthPassword: string,
+  authPasswordSalt: string,
 }
 
 export async function getProposalFromDb(mySql: ServerlessMysql, proposalId: string) {
@@ -70,24 +73,26 @@ export async function getProposalFromDb(mySql: ServerlessMysql, proposalId: stri
   );
 
   if (sqlRows.length === 0) {
-    return null;
+    return { dbProposal: null, dbProposalPasswordData: null };
   }
 
   const sqlRow = sqlRows[0];
-  const jsObject: IGetProposalFromDb = {
+  const dbProposal: IDbProposal = {
     id: sqlRow.proposal,
-    hashedAuthPassword: sqlRow.hashed_auth_password,
-    authPasswordSalt: sqlRow.auth_password_salt,
     partialTx: sqlRow.partial_tx,
     signatures: sqlRow.signatures,
     timestamp: sqlRow.updated_at.toString(),
     version: sqlRow.version,
     history: [],
   };
+  const dbProposalPasswordData : IDbProposalPasswordData = {
+    hashedAuthPassword: sqlRow.hashed_auth_password,
+    authPasswordSalt: sqlRow.auth_password_salt,
+  };
 
   if (sqlRow.history?.length) {
     try {
-      jsObject.history = JSON.parse(sqlRow.history);
+      dbProposal.history = JSON.parse(sqlRow.history);
     } catch (e) {
       // TODO: Implement a logger here to avoid using just the console
       // eslint-disable-next-line no-console
@@ -95,5 +100,5 @@ export async function getProposalFromDb(mySql: ServerlessMysql, proposalId: stri
     }
   }
 
-  return jsObject;
+  return { dbProposal, dbProposalPasswordData };
 }

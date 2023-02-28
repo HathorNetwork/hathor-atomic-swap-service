@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { getProposalFromDb, IGetProposalFromDb, IProposalSqlRow } from '../../src/services/proposals';
+import { getProposalFromDb, IProposalSqlRow } from '../../src/services/proposals';
 import { ServerlessMysql } from 'serverless-mysql';
 
 describe('getProposalFromDb', () => {
@@ -27,17 +27,25 @@ describe('getProposalFromDb', () => {
     } as unknown as ServerlessMysql;
 
     const results = await getProposalFromDb(mockedSql, 'mockId');
-    expect(results).toStrictEqual({
-      id: 'mockedProposalId',
-      hashedAuthPassword: '123',
-      authPasswordSalt: '234',
-      partialTx: 'bce',
-      signatures: 'ced',
-      timestamp: '03-dec',
-      version: 0,
-      history: [{ partialTx: 'abc1', timestamp: '02-dec' }],
-    } as IGetProposalFromDb)
-  })
+    expect(results)
+      .toStrictEqual({
+        dbProposal: {
+          id: 'mockedProposalId',
+          partialTx: 'bce',
+          signatures: 'ced',
+          timestamp: '03-dec',
+          version: 0,
+          history: [{
+            partialTx: 'abc1',
+            timestamp: '02-dec'
+          }],
+        },
+        dbProposalPasswordData: {
+          hashedAuthPassword: '123',
+          authPasswordSalt: '234',
+        }
+      });
+  });
 
   it('should handle malformed history serialization errors', async () => {
     const mockedSql = {
@@ -57,16 +65,21 @@ describe('getProposalFromDb', () => {
     } as unknown as ServerlessMysql;
 
     const results = await getProposalFromDb(mockedSql, 'mockId');
-    expect(results).toStrictEqual({
-      id: 'mockedProposalId',
-      hashedAuthPassword: '123',
-      authPasswordSalt: '234',
-      partialTx: 'bce',
-      signatures: 'ced',
-      timestamp: '03-dec',
-      version: 0,
-      history: [],
-    } as IGetProposalFromDb)
+    expect(results)
+      .toStrictEqual({
+        dbProposal: {
+          id: 'mockedProposalId',
+          partialTx: 'bce',
+          signatures: 'ced',
+          timestamp: '03-dec',
+          version: 0,
+          history: [],
+        },
+        dbProposalPasswordData: {
+          hashedAuthPassword: '123',
+          authPasswordSalt: '234',
+        }
+      });
 
     // TODO: When a logger is implemented, spy it and add a call assertion here
   })

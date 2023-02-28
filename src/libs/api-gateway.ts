@@ -22,7 +22,7 @@ export interface IValidatedEventAPIGatewayProxyEvent<S> extends Handler<IValidat
 
 }
 
-export const formatJSONResponse = (response: Record<string, unknown>) => ({
+export const formatJSONResponse = (response: unknown) => ({
   statusCode: 200,
   body: JSON.stringify(response),
 });
