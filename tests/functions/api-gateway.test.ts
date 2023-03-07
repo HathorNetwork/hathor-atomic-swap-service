@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { closeDbConnection, getDbConnection } from "@libs/db";
-import { cleanDatabase, generateApiEvent, generateHandlerContext } from "../utils";
-import { main as create } from "@functions/create/handler";
-import * as proposalService from "@services/proposals";
+import { closeDbConnection, getDbConnection } from '@libs/db';
+import { cleanDatabase, generateApiEvent, generateHandlerContext } from '../utils';
+import { main as create } from '@functions/createSwapProposal/handler';
+import * as proposalService from '@services/proposals';
 import { wrapWithErrorHandler } from '../../src/libs/lambda';
-import { LambdaError } from '../../src/libs/errors';
+import { ApiError, LambdaError } from '../../src/libs/errors';
 
 const mySql = getDbConnection();
 
@@ -147,7 +147,7 @@ describe('no-connection wrapper handler', () => {
 
   it('should treat the response for a handler failure', async () => {
     const testHandler = wrapWithErrorHandler(() => {
-      throw new LambdaError('Connectionless error', 'UNKNOWN_ERROR');
+      throw new LambdaError('Connectionless error', ApiError.UnknownError);
     });
 
     const event = generateApiEvent();

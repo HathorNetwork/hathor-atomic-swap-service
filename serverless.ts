@@ -6,7 +6,8 @@
  */
 
 import type { AWS } from '@serverless/typescript';
-import create from '@functions/create';
+import create from '@functions/createSwapProposal';
+import get from '@functions/getSwapProposal';
 
 require('dotenv').config();
 
@@ -31,9 +32,19 @@ const serverlessConfiguration: AWS = {
       DB_NAME: '${env:DB_NAME}',
       DB_PORT: '${env:DB_PORT}',
     },
+    vpc: {
+      securityGroupIds: [
+        process.env.AWS_VPC_DEFAULT_SG_ID
+      ],
+      subnetIds: [
+        process.env.AWS_SUBNET_ID_1,
+        process.env.AWS_SUBNET_ID_2,
+        process.env.AWS_SUBNET_ID_3,
+      ]
+    }
   },
   // import the function via paths
-  functions: { create },
+  functions: { create, get },
   package: { individually: true },
   custom: {
     stage: '${opt:stage, "dev"}',
