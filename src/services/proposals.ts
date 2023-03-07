@@ -9,6 +9,7 @@ import { ServerlessMysql } from 'serverless-mysql';
 import { v4 } from 'uuid';
 import { hashPassword } from '@libs/util';
 import { ApiError, LambdaError } from '@libs/errors';
+import { MAX_HISTORY_LENGTH } from '@libs/constants';
 
 export interface CreateProposalDbInputs {
   authPassword: string;
@@ -107,4 +108,36 @@ export async function getProposalFromDb(mySql: ServerlessMysql, proposalId: stri
   }
 
   return { dbProposal, dbProposalPasswordData };
+}
+
+export interface IUpdateProposalDbInputs {
+  partialTx: string,
+  signatures?: string,
+}
+
+export async function updateProposalOnDb(mySql: ServerlessMysql, current: IDbProposal, updateData: IUpdateProposalDbInputs) {
+  const proposalId = current.id;
+
+  // Checking if there was a change on the proposal data, or only on its signatures
+  let newHistory: IDbProposal['history'] | undefined;
+  if (current.partialTx !== updateData.partialTx) {
+    newHistory = [
+      { partialTx: current.partialTx, timestamp: current.timestamp },
+      ...current.history,
+    ].slice(0, MAX_HISTORY_LENGTH);
+  }
+
+  const mySqlQuery = `UPDATE proposals
+SET version=version+1, 
+  partial_tx=?, 
+  signatures=?, 
+  ${newHistory ? 'history=?,' : ''} 
+  updated_at=CURRENT_TIMESTAMP
+WHERE proposal=?;
+`;
+  const updateArray = newHistory
+    ? [updateData.partialTx, updateData.signatures, JSON.stringify(newHistory), proposalId]
+    : [updateData.partialTx, updateData.signatures, proposalId];
+
+  return mySql.query(mySqlQuery, updateArray);
 }

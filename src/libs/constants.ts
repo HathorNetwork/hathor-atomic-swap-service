@@ -28,6 +28,11 @@ export const HASH_ITERATIONS = 1000;
 export const HASH_KEY_SIZE = 256;
 
 /**
+ * Maximum amount of history elements stored on the proposal
+ */
+export const MAX_HISTORY_LENGTH = 4;
+
+/**
  * Name of the header that should be present when interacting with endpoints that get/update proposal data
  */
 export const AUTHPASSWORD_HEADER_KEY = 'X-Auth-Password';

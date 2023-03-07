@@ -8,6 +8,7 @@
 import type { AWS } from '@serverless/typescript';
 import create from '@functions/createSwapProposal';
 import get from '@functions/getSwapProposal';
+import update from '@functions/updateSwapProposal';
 
 require('dotenv').config();
 
@@ -44,7 +45,7 @@ const serverlessConfiguration: AWS = {
     }
   },
   // import the function via paths
-  functions: { create, get },
+  functions: { create, get, update },
   package: { individually: true },
   custom: {
     stage: '${opt:stage, "dev"}',

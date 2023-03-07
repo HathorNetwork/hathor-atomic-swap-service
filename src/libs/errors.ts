@@ -10,6 +10,7 @@ export enum ApiError {
   DuplicateProposalId = 'DUPLICATE_PROPOSAL_ID',
   InvalidPassword = 'INVALID_PASSWORD',
   IncorrectPassword = 'INCORRECT_PASSWORD',
+  VersionConflict = 'VERSION_CONFLICT',
   UnknownError = 'UNKNOWN_ERROR',
 }
 
@@ -18,6 +19,7 @@ export const STATUS_CODE_TABLE = {
   DUPLICATE_PROPOSAL_ID: 500,
   INVALID_PASSWORD: 400,
   INCORRECT_PASSWORD: 403,
+  VERSION_CONFLICT: 409,
   UNKNOWN_ERROR: 500,
 } as const;
 
