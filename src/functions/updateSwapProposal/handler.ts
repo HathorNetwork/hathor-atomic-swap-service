@@ -23,11 +23,13 @@ const update: IValidatedEventAPIGatewayProxyEvent<typeof updateProposalSchema> =
     version,
   } = event.body as IUpdateProposalRequest;
 
+  // Password validation
   const authPassword = event.headers[AUTHPASSWORD_HEADER_KEY] || '';
   if (authPassword.length < 3) {
     throw new LambdaError('Invalid password', ApiError.InvalidPassword);
   }
 
+  // Proposal content validation
   const proposalId = event.pathParameters.proposalId;
   const { dbProposal, dbProposalPasswordData } = await getProposalFromDb(event.mySql, proposalId);
   if (!dbProposal) {
@@ -37,10 +39,12 @@ const update: IValidatedEventAPIGatewayProxyEvent<typeof updateProposalSchema> =
     throw new LambdaError('Incorrect password', ApiError.IncorrectPassword);
   }
 
+  // Checking for conflicts
   if (version !== dbProposal.version) {
     throw new LambdaError('Version conflict', ApiError.VersionConflict);
   }
 
+  // Updating proposal
   await updateProposalOnDb(event.mySql, dbProposal, {
     partialTx,
     signatures,
