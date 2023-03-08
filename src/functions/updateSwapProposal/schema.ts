@@ -13,8 +13,8 @@ export default {
   type: 'object',
   properties: {
     partialTx: { type: 'string' },
-    authPassword: { type: 'string' },
-    expiresAt: { type: 'string' },
+    signatures: { type: ['string', 'null'] },
+    version: { type: 'number' },
   },
-  required: ['partialTx', 'authPassword'],
+  required: ['partialTx', 'version'],
 } as const;
