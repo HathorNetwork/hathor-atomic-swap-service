@@ -64,6 +64,8 @@ const serverlessConfiguration: AWS = {
     },
     'serverless-offline': {
       httpPort: process.env.HTTP_PORT || 3001,
+      websocketPort: process.env.WEBSOCKET_PORT || 3002,
+      lambdaPort: process.env.LAMBDA_PORT || 3003,
     },
   },
 };

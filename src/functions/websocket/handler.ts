@@ -15,6 +15,7 @@ import {
   DEFAULT_API_GATEWAY_RESPONSE, endWsConnection, initWsConnection,
 } from '@libs/websocket';
 import { closeDbConnection, getDbConnection } from '@libs/db';
+import { wrapWithConnection } from '@libs/lambda';
 
 const mysql = getDbConnection();
 
@@ -41,3 +42,5 @@ export const connect = async (
 
   return DEFAULT_API_GATEWAY_RESPONSE;
 };
+
+export const main = wrapWithConnection(connect);
