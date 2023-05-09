@@ -6,7 +6,6 @@
  */
 
 import {
-  APIGatewayProxyEvent,
   APIGatewayProxyResult,
 } from 'aws-lambda';
 import {
@@ -14,33 +13,89 @@ import {
   sendMessageToClient,
   DEFAULT_API_GATEWAY_RESPONSE, endWsConnection, initWsConnection,
 } from '@libs/websocket';
-import { closeDbConnection, getDbConnection } from '@libs/db';
-import { wrapWithConnection } from '@libs/lambda';
+import middy from '@middy/core';
+import { errorHandlerMiddleware, sqlConnectionMiddleware } from '@libs/lambda';
 
-const mysql = getDbConnection();
+const connectFunction = async (event) : Promise<APIGatewayProxyResult> => {
+  try {
+    // console.log(`\n${JSON.stringify(event)}\n`);
+    const routeKey = event.requestContext.routeKey;
+    // info needed to send response to client
+    const connInfo = connectionInfoFromEvent(event);
+    console.log(`Received ${routeKey} with connInfo ${JSON.stringify(connInfo)}`);
 
-export const connect = async (
-  event: APIGatewayProxyEvent,
-): Promise<APIGatewayProxyResult> => {
-  const routeKey = event.requestContext.routeKey;
-  // info needed to send response to client
-  const connInfo = connectionInfoFromEvent(event);
+    await initWsConnection(event.mySql, connInfo);
 
-  if (routeKey === '$connect') {
-    await initWsConnection(mysql, connInfo);
+    console.log(`Returned from "${routeKey}" successfully`);
+    return DEFAULT_API_GATEWAY_RESPONSE;
+  } catch (err) {
+    console.error('Lambda error!', err.stack);
+    return { statusCode: 500, body: err.stack };
   }
-
-  if (routeKey === '$disconnect') {
-    await endWsConnection(mysql, connInfo.id);
-  }
-
-  if (routeKey === 'ping') {
-    await sendMessageToClient(mysql, connInfo, { type: 'pong' });
-  }
-
-  await closeDbConnection(mysql);
-
-  return DEFAULT_API_GATEWAY_RESPONSE;
 };
+export const connectHandler = middy(connectFunction)
+  .use(sqlConnectionMiddleware())
+  .use(errorHandlerMiddleware());
 
-export const main = wrapWithConnection(connect);
+const disconnectFunction = async (event) : Promise<APIGatewayProxyResult> => {
+  try {
+    // console.log(`\n${JSON.stringify(event)}\n`);
+    const routeKey = event.requestContext.routeKey;
+    // info needed to send response to client
+    const connInfo = connectionInfoFromEvent(event);
+    console.log(`Received ${routeKey} with connInfo ${JSON.stringify(connInfo)}`);
+
+    await endWsConnection(event.mySql, connInfo.id);
+
+    console.log(`Returned from "${routeKey}" successfully`);
+    return DEFAULT_API_GATEWAY_RESPONSE;
+  } catch (err) {
+    console.error('Lambda error!', err.stack);
+    return { statusCode: 500, body: err.stack };
+  }
+};
+export const disconnectHandler = middy(disconnectFunction)
+  .use(sqlConnectionMiddleware())
+  .use(errorHandlerMiddleware());
+
+const pingFunction = async (event) : Promise<APIGatewayProxyResult> => {
+  try {
+    // console.log(`\n${JSON.stringify(event)}\n`);
+    const routeKey = event.requestContext.routeKey;
+    // info needed to send response to client
+    const connInfo = connectionInfoFromEvent(event);
+    console.log(`Received ${routeKey} with connInfo ${JSON.stringify(connInfo)}`);
+
+    await sendMessageToClient(event.mySql, connInfo, { type: 'pong' });
+
+    console.log(`Returned from "${routeKey}" successfully`);
+    return DEFAULT_API_GATEWAY_RESPONSE;
+  } catch (err) {
+    console.error('Lambda error!', err.stack);
+    return { statusCode: 500, body: err.stack };
+  }
+};
+export const pingHandler = middy(pingFunction)
+  .use(sqlConnectionMiddleware())
+  .use(errorHandlerMiddleware());
+
+const defaultFunction = async (event) : Promise<APIGatewayProxyResult> => {
+  try {
+    // console.log(`\n${JSON.stringify(event)}\n`);
+    const routeKey = event.requestContext.routeKey;
+    // info needed to send response to client
+    const connInfo = connectionInfoFromEvent(event);
+    console.log(`Received ${routeKey} with connInfo ${JSON.stringify(connInfo)}`);
+
+    await sendMessageToClient(event.mySql, connInfo, { type: 'pong-default' });
+
+    console.log(`Returned from "${routeKey}" successfully`);
+    return DEFAULT_API_GATEWAY_RESPONSE;
+  } catch (err) {
+    console.error('Lambda error!', err.stack);
+    return { statusCode: 500, body: err.stack };
+  }
+};
+export const defaultHandler = middy(defaultFunction)
+  .use(sqlConnectionMiddleware())
+  .use(errorHandlerMiddleware());

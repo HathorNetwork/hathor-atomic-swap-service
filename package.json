@@ -14,12 +14,15 @@
     "node": ">=18.13.0"
   },
   "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.301.0",
     "@middy/core": "^3.4.0",
     "@middy/http-json-body-parser": "^3.4.0",
+    "@middy/ws-json-body-parser": "^4.2.8",
+    "@middy/ws-response": "^4.2.8",
+    "@middy/ws-router": "^4.4.0",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
     "aws-lambda": "^1.0.7",
-    "aws-sdk": "^2.1343.0",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
     "mysql2": "^3.0.1",

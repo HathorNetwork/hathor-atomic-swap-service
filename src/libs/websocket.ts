@@ -7,7 +7,7 @@
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
-import AWS from 'aws-sdk';
+import { ApiGatewayManagementApiClient, PostToConnectionCommand, DeleteConnectionCommand } from '@aws-sdk/client-apigatewaymanagementapi';
 import util from 'util';
 
 import { WsConnectionInfo } from '@models/websocket';
@@ -26,7 +26,7 @@ export const connectionInfoFromEvent = (
     // This will enter when running the service on serverless offline mode
     return {
       id: connID,
-      url: 'http://localhost:3001',
+      url: 'http://localhost:3002', // TODO: Fetch the port number from the config
     };
   }
 
@@ -71,18 +71,18 @@ export const sendMessageToClient = async (
   connInfo: WsConnectionInfo,
   payload: any, // eslint-disable-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 ): Promise<any> => { // eslint-disable-line @typescript-eslint/no-explicit-any
-  const apiGwClient = new AWS.ApiGatewayManagementApi({
+  console.log(`sendMessageToClient requested with ${JSON.stringify(connInfo)}, msg: ${JSON.stringify(payload)}`);
+
+  const apiGwClient = new ApiGatewayManagementApiClient({
     apiVersion: '2018-11-29',
     endpoint: connInfo.url,
   });
-  // AWS.Request.promise() will make the request and return a thenable with the response
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Request.html#promise-property
-  return apiGwClient.postToConnection(
-    {
-      ConnectionId: connInfo.id,
-      Data: JSON.stringify(payload),
-    },
-  ).promise().catch(
+  const command = new PostToConnectionCommand({
+    ConnectionId: connInfo.id,
+    Data: JSON.stringify(payload),
+  });
+
+  return apiGwClient.send(command).catch(
     (err) => {
       // http GONE(410) means client is disconnected, but still exists on our connection store
       if (err.statusCode === 410) {
@@ -98,15 +98,15 @@ export const disconnectClient = async (
   client: ServerlessMysql,
   connInfo: WsConnectionInfo,
 ): Promise<any> => { // eslint-disable-line @typescript-eslint/no-explicit-any
-  const apiGwClient = new AWS.ApiGatewayManagementApi({
+  const apiGwClient = new ApiGatewayManagementApiClient({
     apiVersion: '2018-11-29',
     endpoint: connInfo.url,
   });
-  return apiGwClient.deleteConnection(
-    {
-      ConnectionId: connInfo.id,
-    },
-  ).promise().catch(
+  const command = new DeleteConnectionCommand({
+    ConnectionId: connInfo.id,
+  });
+
+  return apiGwClient.send(command).catch(
     (err) => {
       // http GONE(410) means client is disconnected, but still exists on our connection store
       if (err.statusCode === 410) {

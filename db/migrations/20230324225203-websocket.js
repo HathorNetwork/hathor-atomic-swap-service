@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
       },
       url: {
-        type: Sequelize.STRING(65536), // Maximum size, unsure of what to expect
+        type: Sequelize.STRING(16000), // Maximum size, unsure of what to expect
         allowNull: false,
       },
       updated_at: {

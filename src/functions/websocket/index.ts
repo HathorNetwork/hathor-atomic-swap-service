@@ -7,8 +7,8 @@
 
 import { handlerPath } from '@libs/handler-resolver';
 
-export default {
-  handler: `${handlerPath(__dirname)}/handler.main`,
+export const wsConnect = {
+  handler: `${handlerPath(__dirname)}/handler.connectHandler`,
   timeout: 2, // seconds
   events: [
     {
@@ -16,14 +16,40 @@ export default {
         route: '$connect',
       },
     },
+  ],
+};
+
+export const wsDisconnect = {
+  handler: `${handlerPath(__dirname)}/handler.disconnectHandler`,
+  timeout: 2, // seconds
+  events: [
     {
       websocket: {
         route: '$disconnect',
       },
     },
+  ],
+};
+
+export const wsPing = {
+  handler: `${handlerPath(__dirname)}/handler.pingHandler`,
+  timeout: 2, // seconds
+  events: [
     {
       websocket: {
         route: 'ping',
+      },
+    },
+  ],
+};
+
+export const wsDefault = {
+  handler: `${handlerPath(__dirname)}/handler.defaultHandler`,
+  timeout: 2, // seconds
+  events: [
+    {
+      websocket: {
+        route: '$default',
       },
     },
   ],

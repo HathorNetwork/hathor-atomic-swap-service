@@ -9,7 +9,7 @@ import type { AWS } from '@serverless/typescript';
 import create from '@functions/createSwapProposal';
 import get from '@functions/getSwapProposal';
 import update from '@functions/updateSwapProposal';
-import websocket from '@functions/websocket';
+import { wsConnect, wsDisconnect, wsPing, wsDefault } from '@functions/websocket';
 
 require('dotenv').config();
 
@@ -35,7 +35,7 @@ const serverlessConfiguration: AWS = {
       DB_PORT: '${env:DB_PORT}',
     },
     websocketsApiName: 'atomic-realtime-ws-api-${self:custom.stage}',
-    websocketsApiRouteSelectionExpression: '$request.body.action',
+    websocketsApiRouteSelectionExpression: '$request.body.type',
     vpc: {
       securityGroupIds: [
         process.env.AWS_VPC_DEFAULT_SG_ID
@@ -48,7 +48,15 @@ const serverlessConfiguration: AWS = {
     }
   },
   // import the function via paths
-  functions: { create, get, update, websocket },
+  functions: {
+    create,
+    get,
+    update,
+    wsConnect,
+    wsDisconnect,
+    wsPing,
+    wsDefault
+  },
   package: { individually: true },
   custom: {
     stage: '${opt:stage, "dev"}',

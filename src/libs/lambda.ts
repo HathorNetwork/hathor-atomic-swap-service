@@ -19,6 +19,7 @@ interface swapRequest extends middy.Request {
      * A connection managed by the global error handler middleware
      */
     mySql?: ServerlessMysql,
+    body?: string,
     [key: string]: any,
   }
   error: LambdaError | Error,
@@ -46,13 +47,14 @@ const globalOnErrorHandler = async (request: middy.Request) => {
   if (process.env.STAGE === 'local') {
     errorBody.stack = errorObj.stack;
   }
+  console.error(`Received an error: ${errorObj.stack}`);
   return {
     statusCode: STATUS_CODE_TABLE[errorBody.code],
     body: JSON.stringify(errorBody),
   };
 };
 
-const sqlConnectionMiddleware = () : MiddlewareObj => ({
+export const sqlConnectionMiddleware = () : MiddlewareObj => ({
   // Adds the MySQL connection to the handler context
   before: async (request: swapRequest) => {
     request.event.mySql = await mySql;
@@ -64,7 +66,7 @@ const sqlConnectionMiddleware = () : MiddlewareObj => ({
   onError: globalOnErrorHandler,
 });
 
-const errorHandlerMiddleware = () : MiddlewareObj => ({
+export const errorHandlerMiddleware = () : MiddlewareObj => ({
   onError: globalOnErrorHandler,
 });
 
