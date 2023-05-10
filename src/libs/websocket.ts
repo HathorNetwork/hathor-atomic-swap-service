@@ -79,7 +79,7 @@ export const sendMessageToClient = async (
   });
   const command = new PostToConnectionCommand({
     ConnectionId: connInfo.id,
-    Data: JSON.stringify(payload),
+    Data: JSON.stringify(payload) as unknown as Uint8Array,
   });
 
   return apiGwClient.send(command).catch(

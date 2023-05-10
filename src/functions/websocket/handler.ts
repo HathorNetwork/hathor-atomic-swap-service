@@ -16,7 +16,7 @@ import {
 import middy from '@middy/core';
 import { errorHandlerMiddleware, sqlConnectionMiddleware } from '@libs/lambda';
 
-const connectFunction = async (event) : Promise<APIGatewayProxyResult> => {
+const connectFunction = async (event) => {
   try {
     // console.log(`\n${JSON.stringify(event)}\n`);
     const routeKey = event.requestContext.routeKey;
