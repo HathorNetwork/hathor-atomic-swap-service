@@ -32,43 +32,33 @@ export const connectHandler = middy(connectFunction)
   .use(sqlConnectionMiddleware())
   .use(errorHandlerMiddleware());
 
-const disconnectFunction = async (event) : Promise<APIGatewayProxyResult> => {
-  try {
-    // console.log(`\n${JSON.stringify(event)}\n`);
-    const routeKey = event.requestContext.routeKey;
-    // info needed to send response to client
-    const connInfo = connectionInfoFromEvent(event);
-    console.log(`Received ${routeKey} with connInfo ${JSON.stringify(connInfo)}`);
+const disconnectFunction = async (event): Promise<APIGatewayProxyResult> => {
+  // console.log(`\n${JSON.stringify(event)}\n`);
+  const routeKey = event.requestContext.routeKey;
+  // info needed to send response to client
+  const connInfo = connectionInfoFromEvent(event);
+  console.log(`Received ${routeKey} with connInfo ${JSON.stringify(connInfo)}`);
 
-    await endWsConnection(event.mySql, connInfo.id);
+  await endWsConnection(event.mySql, connInfo.id);
 
-    console.log(`Returned from "${routeKey}" successfully`);
-    return DEFAULT_API_GATEWAY_RESPONSE;
-  } catch (err) {
-    console.error('Lambda error!', err.stack);
-    return { statusCode: 500, body: err.stack };
-  }
+  console.log(`Returned from "${routeKey}" successfully`);
+  return DEFAULT_API_GATEWAY_RESPONSE;
 };
 export const disconnectHandler = middy(disconnectFunction)
   .use(sqlConnectionMiddleware())
   .use(errorHandlerMiddleware());
 
-const pingFunction = async (event) : Promise<APIGatewayProxyResult> => {
-  try {
-    // console.log(`\n${JSON.stringify(event)}\n`);
-    const routeKey = event.requestContext.routeKey;
-    // info needed to send response to client
-    const connInfo = connectionInfoFromEvent(event);
-    console.log(`Received ${routeKey} with connInfo ${JSON.stringify(connInfo)}`);
+const pingFunction = async (event): Promise<APIGatewayProxyResult> => {
+  // console.log(`\n${JSON.stringify(event)}\n`);
+  const routeKey = event.requestContext.routeKey;
+  // info needed to send response to client
+  const connInfo = connectionInfoFromEvent(event);
+  console.log(`Received ${routeKey} with connInfo ${JSON.stringify(connInfo)}`);
 
-    await sendMessageToClient(event.mySql, connInfo, { type: 'pong' });
+  await sendMessageToClient(event.mySql, connInfo, { type: 'pong' });
 
-    console.log(`Returned from "${routeKey}" successfully`);
-    return DEFAULT_API_GATEWAY_RESPONSE;
-  } catch (err) {
-    console.error('Lambda error!', err.stack);
-    return { statusCode: 500, body: err.stack };
-  }
+  console.log(`Returned from "${routeKey}" successfully`);
+  return DEFAULT_API_GATEWAY_RESPONSE;
 };
 export const pingHandler = middy(pingFunction)
   .use(sqlConnectionMiddleware())

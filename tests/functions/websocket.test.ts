@@ -71,6 +71,29 @@ describe('close a ws connection', () => {
     await closeDbConnection(mySql);
   })
 
+  it('should handle an exception and inform the client', async () => {
+    const event = generateWsEvent();
+    const context = generateWsContext();
+
+    const endConnectionSpy = jest
+      .spyOn(webSocketUtils, 'endWsConnection')
+      .mockImplementation(() => Promise.reject(new Error('Sample disconnect error')));
+
+    // Asserting client response
+    const result = await disconnectHandler(event, context);
+    expect(result.statusCode).toStrictEqual(500);
+    expect(JSON.parse(result.body)).toStrictEqual(expect.objectContaining({
+      code: ApiError.UnknownError,
+      errorMessage: 'Sample disconnect error'
+    }));
+
+    // Asserting there is no persistent storage of the connection
+    const sqlConnection = await mySql.query(`SELECT * FROM websockets`);
+    expect(sqlConnection).toHaveLength(0);
+
+    endConnectionSpy.mockRestore();
+  })
+
   it('should close an existing connection', async () => {
     // Creating the connection on the database
     const connInfo = { id: v4(), url: 'http://test-url' };
@@ -110,6 +133,27 @@ describe('ping request', () => {
 
   afterAll(async () => {
     await closeDbConnection(mySql);
+  })
+
+  it('should handle an exception and inform the client', async () => {
+    const event = generateWsEvent();
+    const context = generateWsContext();
+
+    const connInfoSpy = jest
+      .spyOn(webSocketUtils, 'connectionInfoFromEvent')
+      .mockImplementation(() => {
+        throw new Error('Sample ping error');
+      });
+
+    // Asserting client response
+    const result = await connectHandler(event, context);
+    expect(result.statusCode).toStrictEqual(500);
+    expect(JSON.parse(result.body)).toStrictEqual(expect.objectContaining({
+      code: ApiError.UnknownError,
+      errorMessage: 'Sample ping error'
+    }));
+
+    connInfoSpy.mockRestore();
   })
 
   it('should respond with a pong', async () => {
