@@ -42,15 +42,3 @@ export const wsPing = {
     },
   ],
 };
-
-export const wsDefault = {
-  handler: `${handlerPath(__dirname)}/handler.defaultHandler`,
-  timeout: 2, // seconds
-  events: [
-    {
-      websocket: {
-        route: '$default',
-      },
-    },
-  ],
-};

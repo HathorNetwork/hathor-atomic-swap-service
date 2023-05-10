@@ -9,7 +9,7 @@ import type { AWS } from '@serverless/typescript';
 import create from '@functions/createSwapProposal';
 import get from '@functions/getSwapProposal';
 import update from '@functions/updateSwapProposal';
-import { wsConnect, wsDisconnect, wsPing, wsDefault } from '@functions/websocket';
+import { wsConnect, wsDisconnect, wsPing } from '@functions/websocket';
 
 require('dotenv').config();
 
@@ -55,7 +55,6 @@ const serverlessConfiguration: AWS = {
     wsConnect,
     wsDisconnect,
     wsPing,
-    wsDefault
   },
   package: { individually: true },
   custom: {
