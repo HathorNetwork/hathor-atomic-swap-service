@@ -1,4 +1,4 @@
-import { connectionInfoFromEvent, sendMessageToClient } from '@libs/websocket';
+import { connectionInfoFromEvent, disconnectClient, sendMessageToClient } from '@libs/websocket';
 import { generateWsEvent } from '../utils';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { getDbConnection } from '../../src/libs/db';
@@ -109,6 +109,71 @@ describe('sendMessageToClient', () => {
 
     // Assert the sendMessage does not throw
     const response = await sendMessageToClient(mySql, connInfo, payload)
+    expect(response).toBeUndefined();
+
+    // Assert that the connection identifier was deleted from the database
+    expect(endSpy).toHaveBeenCalledWith(expect.stringContaining('DELETE'), ['fake-conn-id']);
+
+    sendSpy.mockRestore();
+    endSpy.mockRestore();
+  })
+
+  it('should return the AWS send results on success', async () => {
+    const connInfo = {
+      id: 'fake-conn-id',
+      url: 'fake-url'
+    };
+    const payload = { fake: 'payload' };
+
+    // Simulate the send success
+    const successObj = { success: true };
+    const sendSpy = jest.spyOn(ApiGatewayManagementApiClient.prototype, 'send')
+      .mockImplementationOnce(async () => {
+        return successObj
+    })
+
+    // Assert the sendMessage does not throw
+    const response = await sendMessageToClient(mySql, connInfo, payload)
+    expect(response).toBe(successObj);
+
+    sendSpy.mockRestore();
+  })
+})
+
+describe('disconnectClient', () => {
+
+  it('should handle errors when sending', async () => {
+    const connInfo = {
+      id: 'fake',
+      url: 'fake-url'
+    };
+
+    const sendSpy = jest.spyOn(ApiGatewayManagementApiClient.prototype, 'send')
+      .mockImplementationOnce(async () => {
+      throw new Error('Send message error');
+    })
+
+    await expect(disconnectClient(mySql, connInfo))
+      .rejects.toThrow('Send message error');
+
+    sendSpy.mockRestore();
+  })
+
+  it('should close the connection when receiving a GONE response', async () => {
+    const connInfo = {
+      id: 'fake-conn-id',
+      url: 'fake-url'
+    };
+
+    // Simulate the server informing that this client is gone
+    const sendSpy = jest.spyOn(ApiGatewayManagementApiClient.prototype, 'send')
+      .mockImplementationOnce(async () => {
+      throw { statusCode: 410 };
+    })
+    const endSpy = jest.spyOn(mySql, 'query')
+
+    // Assert the sendMessage does not throw
+    const response = await disconnectClient(mySql, connInfo)
     expect(response).toBeUndefined();
 
     // Assert that the connection identifier was deleted from the database
