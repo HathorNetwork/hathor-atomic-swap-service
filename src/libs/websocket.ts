@@ -18,20 +18,25 @@ export const DEFAULT_API_GATEWAY_RESPONSE: APIGatewayProxyResult = {
   body: '',
 };
 
+/**
+ * Extracts the connection identifier from the API Gateway proxy event,
+ * and adds the url according to the current WS_DOMAIN configuration
+ */
 export const connectionInfoFromEvent = (
   event: APIGatewayProxyEvent,
 ): WsConnectionInfo => {
   const connID = event.requestContext.connectionId;
+
+  // This will enter when running the service on serverless offline mode
   if (process.env.IS_OFFLINE === 'true') {
-    // This will enter when running the service on serverless offline mode
     return {
       id: connID,
       url: 'http://localhost:3002', // TODO: Fetch the port number from the config
     };
   }
 
+  // Obtaining the domain URL from the server configurations
   const domain = process.env.WS_DOMAIN;
-
   if (!domain) {
     // Throw so we receive an alert telling us that something is wrong with the env variable
     // instead of trying to invoke a lambda at https://undefined
@@ -44,6 +49,9 @@ export const connectionInfoFromEvent = (
   };
 };
 
+/**
+ * Initializes a websocket connection by storing its identifier on the database
+ */
 export const initWsConnection = async (
   client: ServerlessMysql,
   connInfo: WsConnectionInfo,
@@ -57,6 +65,10 @@ export const initWsConnection = async (
 
   return connInfo.id;
 };
+
+/**
+ * Ends a websocket connection by removing its identifier from the database
+ */
 export const endWsConnection = async (
   client: ServerlessMysql,
   connectionId: string,
@@ -66,13 +78,15 @@ export const endWsConnection = async (
     [connectionId],
   );
 };
+
+/**
+ * Sends a message to a websocket client through AWS
+ */
 export const sendMessageToClient = async (
   client: ServerlessMysql,
   connInfo: WsConnectionInfo,
-  payload: any, // eslint-disable-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-): Promise<any> => { // eslint-disable-line @typescript-eslint/no-explicit-any
-  console.log(`sendMessageToClient requested with ${JSON.stringify(connInfo)}, msg: ${JSON.stringify(payload)}`);
-
+  payload: any,
+): Promise<any> => {
   const apiGwClient = new ApiGatewayManagementApiClient({
     apiVersion: '2018-11-29',
     endpoint: connInfo.url,
@@ -86,7 +100,7 @@ export const sendMessageToClient = async (
     (err) => {
       // http GONE(410) means client is disconnected, but still exists on our connection store
       if (err.statusCode === 410) {
-        // cleanup connection and subscriptions from redis if GONE
+        // cleanup connection and subscriptions from database if GONE
         return endWsConnection(client, connInfo.id);
       }
       throw err;
@@ -94,10 +108,13 @@ export const sendMessageToClient = async (
   );
 };
 
+/**
+ * Deletes a websocket client on the AWS
+ */
 export const disconnectClient = async (
   client: ServerlessMysql,
   connInfo: WsConnectionInfo,
-): Promise<any> => { // eslint-disable-line @typescript-eslint/no-explicit-any
+): Promise<any> => {
   const apiGwClient = new ApiGatewayManagementApiClient({
     apiVersion: '2018-11-29',
     endpoint: connInfo.url,
@@ -110,7 +127,7 @@ export const disconnectClient = async (
     (err) => {
       // http GONE(410) means client is disconnected, but still exists on our connection store
       if (err.statusCode === 410) {
-        // cleanup connection and subscriptions from redis if GONE
+        // cleanup connection and subscriptions from database if GONE
         return endWsConnection(client, connInfo.id);
       }
       throw err;
