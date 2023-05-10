@@ -4,6 +4,7 @@ import { connectHandler, disconnectHandler, pingHandler } from '@functions/webso
 import { v4 } from 'uuid';
 import { initWsConnection } from '@libs/websocket';
 import * as webSocketUtils from '@libs/websocket'
+import { ApiError } from '../../src/libs/errors';
 
 const mySql = getDbConnection();
 
@@ -19,6 +20,29 @@ describe('open a ws connection', () => {
 
   afterAll(async () => {
     await closeDbConnection(mySql);
+  })
+
+  it('should handle an exception and inform the client', async () => {
+    const event = generateWsEvent();
+    const context = generateWsContext();
+
+    const initConnectionSpy = jest
+      .spyOn(webSocketUtils, 'initWsConnection')
+      .mockImplementation(() => Promise.reject(new Error('Sample error')));
+
+    // Asserting client response
+    const result = await connectHandler(event, context);
+    expect(result.statusCode).toStrictEqual(500);
+    expect(JSON.parse(result.body)).toStrictEqual(expect.objectContaining({
+      code: ApiError.UnknownError,
+      errorMessage: 'Sample error'
+    }));
+
+    // Asserting there is no persistent storage of the connection
+    const sqlConnection = await mySql.query(`SELECT * FROM websockets`);
+    expect(sqlConnection).toHaveLength(0);
+
+    initConnectionSpy.mockRestore();
   })
 
   it('should create a new connection', async () => {

@@ -17,21 +17,16 @@ import middy from '@middy/core';
 import { errorHandlerMiddleware, sqlConnectionMiddleware } from '@libs/lambda';
 
 const connectFunction = async (event) => {
-  try {
-    // console.log(`\n${JSON.stringify(event)}\n`);
-    const routeKey = event.requestContext.routeKey;
-    // info needed to send response to client
-    const connInfo = connectionInfoFromEvent(event);
-    console.log(`Received ${routeKey} with connInfo ${JSON.stringify(connInfo)}`);
+  // console.log(`\n${JSON.stringify(event)}\n`);
+  const routeKey = event.requestContext.routeKey;
+  // info needed to send response to client
+  const connInfo = connectionInfoFromEvent(event);
+  console.log(`Received ${routeKey} with connInfo ${JSON.stringify(connInfo)}`);
 
-    await initWsConnection(event.mySql, connInfo);
+  await initWsConnection(event.mySql, connInfo);
 
-    console.log(`Returned from "${routeKey}" successfully`);
-    return DEFAULT_API_GATEWAY_RESPONSE;
-  } catch (err) {
-    console.error('Lambda error!', err.stack);
-    return { statusCode: 500, body: err.stack };
-  }
+  console.log(`Returned from "${routeKey}" successfully`);
+  return DEFAULT_API_GATEWAY_RESPONSE;
 };
 export const connectHandler = middy(connectFunction)
   .use(sqlConnectionMiddleware())

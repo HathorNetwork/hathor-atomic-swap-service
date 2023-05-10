@@ -13,6 +13,7 @@ import { v4 } from 'uuid';
 export const cleanDatabase = async (mysql: ServerlessMysql): Promise<void> => {
   const TABLES = [
     'proposals',
+    'websockets',
   ];
   await mysql.query('SET FOREIGN_KEY_CHECKS = 0');
   for (const table of TABLES) {
