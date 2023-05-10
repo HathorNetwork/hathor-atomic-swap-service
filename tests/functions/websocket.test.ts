@@ -1,10 +1,15 @@
 import { cleanDatabase, generateWsContext, generateWsEvent } from '../utils';
 import { closeDbConnection, getDbConnection } from '@libs/db';
-import { connectHandler, disconnectHandler } from '@functions/websocket/handler';
+import { connectHandler, disconnectHandler, pingHandler } from '@functions/websocket/handler';
 import { v4 } from 'uuid';
-import { initWsConnection } from '../../src/libs/websocket';
+import { initWsConnection } from '@libs/websocket';
+import * as webSocketUtils from '@libs/websocket'
 
 const mySql = getDbConnection();
+
+const sendMessageSpy = jest
+  .spyOn(webSocketUtils, 'sendMessageToClient')
+  .mockImplementation(jest.fn());
 
 describe('open a ws connection', () => {
 
@@ -72,4 +77,34 @@ describe('close a ws connection', () => {
     expect(sqlConnection).toHaveLength(0);
   })
 
+})
+
+describe('ping request', () => {
+  beforeEach(async () => {
+    await cleanDatabase(mySql);
+  })
+
+  afterAll(async () => {
+    await closeDbConnection(mySql);
+  })
+
+  it('should respond with a pong', async () => {
+    // Creating the connection on the database
+    const connInfo = { id: v4(), url: 'http://test-url' };
+    await initWsConnection(mySql, connInfo);
+
+    const event = generateWsEvent(connInfo.id);
+    const context = generateWsContext();
+
+    // Asserting client response
+    const response = await pingHandler(event, context);
+    expect(response.statusCode).toStrictEqual(200);
+
+    // Asserting persistent storage of the connection
+    expect(sendMessageSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ id: connInfo.id }),
+      { type: 'pong' }
+    );
+  })
 })
