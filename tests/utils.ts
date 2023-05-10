@@ -156,6 +156,10 @@ export const generateApiEvent = (): IValidatedAPIGatewayProxyEvent => {
   };
 };
 
+/**
+ * Generates a websocket event for testing.
+ * @param connectionId Optional identifier for the connection. Will generate a random one if empty
+ */
 export const generateWsEvent = (connectionId?: string) => {
   return {
     headers: {
