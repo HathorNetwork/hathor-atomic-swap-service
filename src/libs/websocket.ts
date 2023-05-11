@@ -7,7 +7,7 @@
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
-import { ApiGatewayManagementApiClient, PostToConnectionCommand, DeleteConnectionCommand } from '@aws-sdk/client-apigatewaymanagementapi';
+import { ApiGatewayManagementApiClient, PostToConnectionCommand } from '@aws-sdk/client-apigatewaymanagementapi';
 import util from 'util';
 
 import { WsConnectionInfo } from '@models/websocket';
@@ -94,33 +94,6 @@ export const sendMessageToClient = async (
   const command = new PostToConnectionCommand({
     ConnectionId: connInfo.id,
     Data: JSON.stringify(payload) as unknown as Uint8Array,
-  });
-
-  return apiGwClient.send(command).catch(
-    (err) => {
-      // http GONE(410) means client is disconnected, but still exists on our connection store
-      if (err.statusCode === 410) {
-        // cleanup connection and subscriptions from database if GONE
-        return endWsConnection(client, connInfo.id);
-      }
-      throw err;
-    },
-  );
-};
-
-/**
- * Deletes a websocket client on the AWS
- */
-export const disconnectClient = async (
-  client: ServerlessMysql,
-  connInfo: WsConnectionInfo,
-): Promise<any> => {
-  const apiGwClient = new ApiGatewayManagementApiClient({
-    apiVersion: '2018-11-29',
-    endpoint: connInfo.url,
-  });
-  const command = new DeleteConnectionCommand({
-    ConnectionId: connInfo.id,
   });
 
   return apiGwClient.send(command).catch(
