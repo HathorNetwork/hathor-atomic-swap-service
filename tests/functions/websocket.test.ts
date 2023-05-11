@@ -115,13 +115,13 @@ describe('close a ws connection', () => {
     const event = generateWsEvent();
     const context = generateWsContext();
 
+    // Asserting there are no connections on the database
+    const sqlConnection = await mySql.query(`SELECT * FROM websockets`);
+    expect(sqlConnection).toHaveLength(0);
+
     // Asserting client response
     const response = await disconnectHandler(event, context);
     expect(response.statusCode).toStrictEqual(200);
-
-    // Asserting persistent storage of the connection
-    const sqlConnection = await mySql.query(`SELECT * FROM websockets where connection = 'nonexistent'`);
-    expect(sqlConnection).toHaveLength(0);
   })
 
 })

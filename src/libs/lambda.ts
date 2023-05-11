@@ -47,7 +47,6 @@ const globalOnErrorHandler = async (request: middy.Request) => {
   if (process.env.STAGE === 'local') {
     errorBody.stack = errorObj.stack;
   }
-  console.error(`Received an error: ${errorObj.stack}`);
   return {
     statusCode: STATUS_CODE_TABLE[errorBody.code],
     body: JSON.stringify(errorBody),

@@ -6,28 +6,8 @@ import { ApiGatewayManagementApiClient } from '@aws-sdk/client-apigatewaymanagem
 
 const mySql = getDbConnection();
 
-
-// jest.mock('@aws-sdk/client-apigatewaymanagementapi', () => {
-//   class ApiGatewayManagementApiClient {
-//     constructor(options: any) {
-//     }
-//
-//     async send(command: any): Promise<any> {
-//       // Simulate a failure response
-//       throw new Error('Not implemented. Mock this on each test');
-//     }
-//   }
-//
-//   return {
-//     ApiGatewayManagementApiClient,
-//     PostToConnectionCommand: jest.fn()
-//   };
-// });
-
-
-
 describe('connectionInfoFromEvent', () => {
-  it('should return correct values when offline', () => {
+  it('should return correct values when running in offline mode', () => {
     const oldEnv = process.env.IS_OFFLINE;
 
     process.env.IS_OFFLINE = 'true';
