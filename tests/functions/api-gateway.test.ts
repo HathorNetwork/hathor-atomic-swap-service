@@ -6,11 +6,12 @@
  */
 
 import { closeDbConnection, getDbConnection } from '@libs/db';
-import { cleanDatabase, generateApiEvent, generateHandlerContext } from '../utils';
+import { cleanDatabase } from '../utils';
 import { main as create } from '@functions/createSwapProposal/handler';
 import * as proposalService from '@services/proposals';
 import { wrapWithErrorHandler } from '../../src/libs/lambda';
 import { ApiError, LambdaError } from '../../src/libs/errors';
+import { generateApiEvent, generateHandlerContext } from '../fixtures';
 
 const mySql = getDbConnection();
 

@@ -1,10 +1,11 @@
-import { cleanDatabase, generateWsContext, generateWsEvent } from '../utils';
+import { cleanDatabase } from '../utils';
 import { closeDbConnection, getDbConnection } from '@libs/db';
 import { connectHandler, disconnectHandler, pingHandler } from '@functions/websocket/handler';
 import { v4 } from 'uuid';
 import { initWsConnection } from '@libs/websocket';
 import * as webSocketUtils from '@libs/websocket'
 import { ApiError } from '../../src/libs/errors';
+import { generateHandlerContext, generateWsEvent } from '../fixtures';
 
 const mySql = getDbConnection();
 
@@ -24,7 +25,7 @@ describe('open a ws connection', () => {
 
   it('should handle an exception and inform the client', async () => {
     const event = generateWsEvent();
-    const context = generateWsContext();
+    const context = generateHandlerContext();
 
     const initConnectionSpy = jest
       .spyOn(webSocketUtils, 'initWsConnection')
@@ -48,7 +49,7 @@ describe('open a ws connection', () => {
   it('should create a new connection', async () => {
     const connectionId = v4(); // Generating a random connection id
     const event = generateWsEvent(connectionId);
-    const context = generateWsContext();
+    const context = generateHandlerContext();
 
     // Asserting client response
     const result = await connectHandler(event, context);
@@ -73,7 +74,7 @@ describe('close a ws connection', () => {
 
   it('should handle an exception and inform the client', async () => {
     const event = generateWsEvent();
-    const context = generateWsContext();
+    const context = generateHandlerContext();
 
     const endConnectionSpy = jest
       .spyOn(webSocketUtils, 'endWsConnection')
@@ -100,7 +101,7 @@ describe('close a ws connection', () => {
     await initWsConnection(mySql, connInfo);
 
     const event = generateWsEvent(connInfo.id);
-    const context = generateWsContext();
+    const context = generateHandlerContext();
 
     // Asserting client response
     const response = await disconnectHandler(event, context);
@@ -113,7 +114,7 @@ describe('close a ws connection', () => {
 
   it('should return success even for an nonexistent connection', async () => {
     const event = generateWsEvent();
-    const context = generateWsContext();
+    const context = generateHandlerContext();
 
     // Asserting there are no connections on the database
     const sqlConnection = await mySql.query(`SELECT * FROM websockets`);
@@ -137,7 +138,7 @@ describe('ping request', () => {
 
   it('should handle an exception and inform the client', async () => {
     const event = generateWsEvent();
-    const context = generateWsContext();
+    const context = generateHandlerContext();
 
     const connInfoSpy = jest
       .spyOn(webSocketUtils, 'connectionInfoFromEvent')
@@ -162,7 +163,7 @@ describe('ping request', () => {
     await initWsConnection(mySql, connInfo);
 
     const event = generateWsEvent(connInfo.id);
-    const context = generateWsContext();
+    const context = generateHandlerContext();
 
     // Asserting client response
     const response = await pingHandler(event, context);

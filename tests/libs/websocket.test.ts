@@ -1,8 +1,8 @@
 import { connectionInfoFromEvent, sendMessageToClient } from '@libs/websocket';
-import { generateWsEvent } from '../utils';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { closeDbConnection, getDbConnection } from '../../src/libs/db';
 import { ApiGatewayManagementApiClient } from '@aws-sdk/client-apigatewaymanagementapi';
+import { generateWsEvent } from '../fixtures';
 
 const mySql = getDbConnection();
 
