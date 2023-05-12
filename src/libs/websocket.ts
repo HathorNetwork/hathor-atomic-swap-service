@@ -91,6 +91,9 @@ export const sendMessageToClient = async (
     apiVersion: '2018-11-29',
     endpoint: connInfo.url,
   });
+
+  // For more complex data content than just Ascii characters, this Uint8Array type casting fails
+  // TODO: Implement an actual conversion
   const command = new PostToConnectionCommand({
     ConnectionId: connInfo.id,
     Data: JSON.stringify(payload) as unknown as Uint8Array,
