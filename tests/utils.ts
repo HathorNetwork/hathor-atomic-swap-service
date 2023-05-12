@@ -8,13 +8,24 @@
 import { ServerlessMysql } from 'serverless-mysql';
 
 export const cleanDatabase = async (mysql: ServerlessMysql): Promise<void> => {
-  const TABLES = [
-    'proposals',
-    'websockets',
-  ];
+  // Retrieving all available tables on the test database
+  const tableNames = await mysql.query(
+    `SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'`
+  ) as { TABLE_NAME: string }[];
+
+  // Ensuring cascade deletions will work despite the order of the removals
   await mysql.query('SET FOREIGN_KEY_CHECKS = 0');
-  for (const table of TABLES) {
-    await mysql.query(`DELETE FROM ${table}`);
+
+  for (const { TABLE_NAME: table } of tableNames) {
+    // Avoid cleaning the Sequelize metadata table, not involved in tests
+    if (table === 'SequelizeMeta') {
+      continue;
+    }
+
+    // Removing all data from each table
+    await mysql.query(`DELETE FROM \`${table}\``);
   }
+
+  // Restoring the cascade deletion protection
   await mysql.query('SET FOREIGN_KEY_CHECKS = 1');
 };
