@@ -1,10 +1,14 @@
 import { connectionInfoFromEvent, sendMessageToClient } from '@libs/websocket';
 import { generateWsEvent } from '../utils';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { getDbConnection } from '../../src/libs/db';
+import { closeDbConnection, getDbConnection } from '../../src/libs/db';
 import { ApiGatewayManagementApiClient } from '@aws-sdk/client-apigatewaymanagementapi';
 
 const mySql = getDbConnection();
+
+afterAll(async () => {
+  await closeDbConnection(mySql);
+})
 
 describe('connectionInfoFromEvent', () => {
   it('should return correct values when running in offline mode', () => {
