@@ -56,11 +56,14 @@ export const initWsConnection = async (
   client: ServerlessMysql,
   connInfo: WsConnectionInfo,
 ): Promise<string> => {
+  /* There is a small chance that the connectionId will be duplicated between $connect
+   * requests. When this happens we can safely ignore the insert.
+   */
   await client.query(
     `INSERT INTO websockets (connection, url)
               VALUES (?, ?)
-              ON DUPLICATE KEY UPDATE url = ?;`,
-    [connInfo.id, connInfo.url, connInfo.url],
+              ON DUPLICATE KEY UPDATE connection = connection;`,
+    [connInfo.id, connInfo.url],
   );
 
   return connInfo.id;
