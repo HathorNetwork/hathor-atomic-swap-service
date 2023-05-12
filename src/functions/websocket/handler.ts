@@ -16,6 +16,9 @@ import {
 import middy from '@middy/core';
 import { errorHandlerMiddleware, sqlConnectionMiddleware } from '@libs/lambda';
 
+/**
+ * Handles the client connection requests to the websocket server
+ */
 const connectFunction = async (event) => {
   const connInfo = connectionInfoFromEvent(event);
   await initWsConnection(event.mySql, connInfo);
@@ -26,6 +29,9 @@ export const connectHandler = middy(connectFunction)
   .use(sqlConnectionMiddleware())
   .use(errorHandlerMiddleware());
 
+/**
+ * Handles the client connection finishing requests to the websocket server
+ */
 const disconnectFunction = async (event): Promise<APIGatewayProxyResult> => {
   const connInfo = connectionInfoFromEvent(event);
   await endWsConnection(event.mySql, connInfo.id);
@@ -36,6 +42,9 @@ export const disconnectHandler = middy(disconnectFunction)
   .use(sqlConnectionMiddleware())
   .use(errorHandlerMiddleware());
 
+/**
+ * Handles the client ping requests, validating the health of the websocket connection
+ */
 const pingFunction = async (event): Promise<APIGatewayProxyResult> => {
   const connInfo = connectionInfoFromEvent(event);
   await sendMessageToClient(event.mySql, connInfo, { type: 'pong' });

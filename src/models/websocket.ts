@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+/**
+ * Structure to store the connection information of a given client, extracted from the request event.
+ * @see connectionInfoFromEvent
+ */
 export type WsConnectionInfo = {
   id: string;
   url: string;
