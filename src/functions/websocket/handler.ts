@@ -25,6 +25,7 @@ const connectFunction = async (event) => {
 
   return DEFAULT_API_GATEWAY_RESPONSE;
 };
+
 export const connectHandler = middy(connectFunction)
   .use(sqlConnectionMiddleware())
   .use(errorHandlerMiddleware());
@@ -38,6 +39,7 @@ const disconnectFunction = async (event): Promise<APIGatewayProxyResult> => {
 
   return DEFAULT_API_GATEWAY_RESPONSE;
 };
+
 export const disconnectHandler = middy(disconnectFunction)
   .use(sqlConnectionMiddleware())
   .use(errorHandlerMiddleware());
@@ -51,6 +53,7 @@ const pingFunction = async (event): Promise<APIGatewayProxyResult> => {
 
   return DEFAULT_API_GATEWAY_RESPONSE;
 };
+
 export const pingHandler = middy(pingFunction)
   .use(sqlConnectionMiddleware())
   .use(errorHandlerMiddleware());
