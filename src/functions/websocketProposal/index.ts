@@ -8,11 +8,26 @@
 import { handlerPath } from '@libs/handler-resolver';
 
 /**
- * Websocket connection route
- * This will be the first route called by any client, registering the connection identifier
- * for future interactions with the Websocket Server.
+ * Websocket proposal subscription
+ * Adds a connectionId as a listener to a specific proposalId
  */
 export const wsSubscribe = {
+  handler: `${handlerPath(__dirname)}/handler.subscribeHandler`,
+  timeout: 2, // seconds
+  events: [
+    {
+      websocket: {
+        route: 'subscribe_proposal',
+      },
+    },
+  ],
+};
+
+/**
+ * Websocket proposal unsubscription
+ * Removes a listener from a specific proposalId
+ */
+export const wsUnsubscribe = {
   handler: `${handlerPath(__dirname)}/handler.subscribeHandler`,
   timeout: 2, // seconds
   events: [
