@@ -47,6 +47,10 @@ const globalOnErrorHandler = async (request: middy.Request) => {
   if (process.env.STAGE === 'local') {
     errorBody.stack = errorObj.stack;
   }
+  // Helping debug
+  if (process.env.IS_OFFLINE) {
+    console.error(JSON.stringify(errorBody, null, 2));
+  }
   return {
     statusCode: STATUS_CODE_TABLE[errorBody.code],
     body: JSON.stringify(errorBody),
