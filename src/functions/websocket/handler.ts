@@ -15,6 +15,7 @@ import {
 } from '@libs/websocket';
 import middy from '@middy/core';
 import { errorHandlerMiddleware, sqlConnectionMiddleware } from '@libs/lambda';
+import { unsubscribeAllForConnection } from '@services/ws-channels';
 
 /**
  * Handles the client connection requests to the websocket server
@@ -36,6 +37,7 @@ export const connectHandler = middy(connectFunction)
 const disconnectFunction = async (event): Promise<APIGatewayProxyResult> => {
   const connInfo = connectionInfoFromEvent(event);
   await endWsConnection(event.mySql, connInfo.id);
+  await unsubscribeAllForConnection(event.mySql, connInfo.id);
 
   return DEFAULT_API_GATEWAY_RESPONSE;
 };
