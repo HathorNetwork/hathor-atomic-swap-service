@@ -14,6 +14,8 @@ import { ApiError, LambdaError } from '@libs/errors';
 import { AUTHPASSWORD_HEADER_KEY } from '@libs/constants';
 import { getProposalFromDb, updateProposalOnDb } from '@services/proposals';
 import { IUpdateProposalRequest } from '@models/update';
+import { sendMessageToSubscribers } from '@libs/websocket';
+import { generateSubscriptionMessagePayload } from '@services/ws-channels';
 import updateProposalSchema from './schema';
 
 const update: IValidatedEventAPIGatewayProxyEvent<typeof updateProposalSchema> = async (event) => {
@@ -49,6 +51,8 @@ const update: IValidatedEventAPIGatewayProxyEvent<typeof updateProposalSchema> =
     partialTx,
     signatures,
   });
+  const payload = generateSubscriptionMessagePayload(dbProposal);
+  await sendMessageToSubscribers(event.mySql, proposalId, payload);
 
   return formatJSONResponse({ success: true });
 };

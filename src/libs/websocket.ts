@@ -12,6 +12,7 @@ import util from 'util';
 
 import { WsConnectionInfo } from '@models/websocket';
 import { ServerlessMysql } from 'serverless-mysql';
+import { getProposalSubscribers } from '@services/ws-channels';
 
 export const DEFAULT_API_GATEWAY_RESPONSE: APIGatewayProxyResult = {
   statusCode: 200,
@@ -112,4 +113,29 @@ export const sendMessageToClient = async (
       throw err;
     },
   );
+};
+
+/**
+ * Sends messages to all the connections that subscribe to a given proposalId
+ * By default, it ignores any error that may happen during the sending.
+ */
+export const sendMessageToSubscribers = async (
+  mySql: ServerlessMysql,
+  proposalId: string,
+  payload: any,
+  options: { muffleErrors: boolean } = { muffleErrors: true },
+) => {
+  const channelSubscribers = await getProposalSubscribers(mySql, proposalId);
+
+  try {
+    // XXX: This could be improved by having a message send queue
+    channelSubscribers.forEach((connInfo) => sendMessageToClient(mySql, connInfo, payload));
+  } catch (err) {
+    // By default, the sending of messages should not interrupt the caller function
+    if (options.muffleErrors) {
+      console.error(`Error when sending Websocket message: ${err.message}`);
+      return;
+    }
+    throw err;
+  }
 };

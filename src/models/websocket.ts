@@ -13,3 +13,11 @@ export type WsConnectionInfo = {
   id: string;
   url: string;
 }
+
+export type WsUpdatePayload = {
+  id: string;
+  partialTx: string;
+  signatures: string;
+  timestamp: string;
+  version: number;
+}
