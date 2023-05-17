@@ -5,10 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { closeDbConnection, getDbConnection } from '../../src/libs/db';
-import { cleanDatabase, generateApiEvent, generateHandlerContext } from '../utils';
+import { cleanDatabase } from '../utils';
 import { AUTHPASSWORD_HEADER_KEY } from '../../src/libs/constants';
 import { main as update } from "@functions/updateSwapProposal/handler";
 import { getProposalFromDb, createProposalOnDb } from '@services/proposals';
+import { generateApiEvent, generateHandlerContext } from '../fixtures';
 
 const mySql = getDbConnection();
 

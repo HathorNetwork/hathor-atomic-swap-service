@@ -65,6 +65,7 @@ jobs:
           CI_DB_NAME: atomic_swap_service_ci
           CI_DB_USERNAME: atomic_swap_service_user
           CI_DB_PASSWORD: password
+          WS_DOMAIN: http://localhost:8083
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:

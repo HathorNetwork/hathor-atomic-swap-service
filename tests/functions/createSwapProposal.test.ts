@@ -6,8 +6,9 @@
  */
 
 import { closeDbConnection, getDbConnection } from "@libs/db";
-import { cleanDatabase, generateApiEvent, generateHandlerContext } from "../utils";
+import { cleanDatabase } from "../utils";
 import { main as create } from "@functions/createSwapProposal/handler";
+import { generateApiEvent, generateHandlerContext } from '../fixtures';
 
 const mySql = getDbConnection();
 

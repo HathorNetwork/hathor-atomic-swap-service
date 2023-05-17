@@ -23,7 +23,11 @@ const config: Config = {
     '<rootDir>/dist/',
   ],
   collectCoverage: true,
-  coveragePathIgnorePatterns: ['/node_modules/', '/tests/utils.ts'],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/tests/utils.ts',
+    '/tests/fixtures.ts'
+  ],
   coverageThreshold: {
     global: {
       branches: 95,
