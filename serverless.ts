@@ -10,6 +10,7 @@ import create from '@functions/createSwapProposal';
 import get from '@functions/getSwapProposal';
 import update from '@functions/updateSwapProposal';
 import { wsConnect, wsDisconnect, wsPing } from '@functions/websocket';
+import { wsSubscribe } from '@functions/websocketProposal';
 
 require('dotenv').config();
 
@@ -55,6 +56,7 @@ const serverlessConfiguration: AWS = {
     wsConnect,
     wsDisconnect,
     wsPing,
+    wsListen: wsSubscribe,
   },
   package: { individually: true },
   custom: {

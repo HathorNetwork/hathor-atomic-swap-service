@@ -12,6 +12,7 @@ export enum ApiError {
   IncorrectPassword = 'INCORRECT_PASSWORD',
   VersionConflict = 'VERSION_CONFLICT',
   UnknownError = 'UNKNOWN_ERROR',
+  MissingParameter = 'MISSING_PARAMETER',
 }
 
 export const STATUS_CODE_TABLE = {
@@ -21,6 +22,7 @@ export const STATUS_CODE_TABLE = {
   INCORRECT_PASSWORD: 403,
   VERSION_CONFLICT: 409,
   UNKNOWN_ERROR: 500,
+  MISSING_PARAMETER: 400,
 } as const;
 
 export class LambdaError extends Error {

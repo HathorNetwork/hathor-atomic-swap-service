@@ -214,3 +214,40 @@ export const generateWsEvent = (connectionId?: string) => {
     mySql: {}
   };
 };
+
+export const subscribeWsEvent = (proposalId) => {
+  return {
+    body: `{"type":"subscribe_proposal","proposalId":"${proposalId || v4()}"}`,
+    isBase64Encoded: false,
+    requestContext: {
+      apiId: 'private',
+      connectedAt: 1684289660344,
+      connectionId: 'f12ba0df-5163-43cf-8a40-e6a6b273e11d',
+      domainName: 'localhost',
+      eventType: 'MESSAGE',
+      extendedRequestId: '6e863615-fde0-4faf-a0a5-c5dc4ced3cac',
+      identity: {
+        accessKey: null,
+        accountId: null,
+        caller: null,
+        cognitoAuthenticationProvider: null,
+        cognitoAuthenticationType: null,
+        cognitoIdentityId: null,
+        cognitoIdentityPoolId: null,
+        principalOrgId: null,
+        sourceIp: '127.0.0.1',
+        user: null,
+        userAgent: null,
+        userArn: null
+      },
+      messageDirection: 'IN',
+      messageId: '5a7f7e50-4178-4a3e-a786-bbcd530bf35b',
+      requestId: '97181026-0a16-40da-a802-296bd3b97531',
+      requestTime: '16/May/2023:23:17:09 -0300',
+      requestTimeEpoch: 1684289829005,
+      routeKey: 'subscribe_proposal',
+      stage: 'local'
+    },
+    mySql: {}
+  };
+};

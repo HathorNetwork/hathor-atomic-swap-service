@@ -6,9 +6,9 @@
  */
 import { ServerlessMysql } from 'serverless-mysql';
 
-export async function listenToProposal(mySql : ServerlessMysql, connectionId: string, proposalId: string) {
+export async function subscribeToProposal(mySql : ServerlessMysql, connectionId: string, proposalId: string) {
   await mySql.query(
-    `INSERT INTO "websockets-proposals" (
+    `INSERT INTO \`websockets-proposals\` (
                                   connection
                                 , proposal)
               VALUES(?, ?);`,
@@ -16,26 +16,26 @@ export async function listenToProposal(mySql : ServerlessMysql, connectionId: st
   );
 }
 
-export async function removeListenedProposal(mySql : ServerlessMysql, connectionId: string, proposalId: string) {
+export async function unsubscribeFromProposal(mySql : ServerlessMysql, connectionId: string, proposalId: string) {
   await mySql.query(
-    `DELETE FROM "websockets-proposals"
+    `DELETE FROM \`websockets-proposals\`
            WHERE connection = ?
              AND proposal = ?`,
     [connectionId, proposalId],
   );
 }
 
-export async function removeConnectionFromListeners(mySql : ServerlessMysql, connectionId: string) {
+export async function unsubscribeAllForProposal(mySql : ServerlessMysql, connectionId: string) {
   await mySql.query(
-    `DELETE FROM "websockets-proposals"
+    `DELETE FROM \`websockets-proposals\`
            WHERE connection = ?`,
     [connectionId],
   );
 }
 
-export async function removeProposalFromListeners(mySql : ServerlessMysql, proposalId: string) {
+export async function unsubscribeAllForConnection(mySql : ServerlessMysql, proposalId: string) {
   await mySql.query(
-    `DELETE FROM "websockets-proposals"
+    `DELETE FROM \`websockets-proposals\`
            WHERE proposal = ?`,
     [proposalId],
   );
