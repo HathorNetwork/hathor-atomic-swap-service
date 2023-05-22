@@ -33,6 +33,8 @@ const serverlessConfiguration: AWS = {
       DB_ENDPOINT: '${env:DB_ENDPOINT}',
       DB_NAME: '${env:DB_NAME}',
       DB_PORT: '${env:DB_PORT}',
+      WS_DOMAIN: '${env:WS_DOMAIN}',
+      WEBSOCKET_PORT: '${env:WEBSOCKET_PORT}',
     },
     websocketsApiName: 'atomic-realtime-ws-api-${self:custom.stage}',
     websocketsApiRouteSelectionExpression: '$request.body.type',
