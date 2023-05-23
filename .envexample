@@ -1,0 +1,22 @@
+STAGE=local
+NODE_ENV=development
+
+# For development usage
+DB_USERNAME=my_user
+DB_PASSWORD=password123
+DB_NAME=atomic_swap_service
+DB_PORT=3306
+
+# For jest testing
+CI_DB_USERNAME=my_test_user
+CI_DB_PASSWORD=testpass123
+CI_DB_NAME=test_atomic_swap_service
+
+# Mandatory variables for actual AWS usage, may be left empty on development
+DB_USER=
+DB_PASS=
+DB_ENDPOINT=
+
+# Websocket
+WS_DOMAIN=http://localhost:8083
+WEBSOCKET_PORT=3002

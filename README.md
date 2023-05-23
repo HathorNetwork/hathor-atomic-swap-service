@@ -23,15 +23,14 @@ To setup a local database you will need:
 This should run all migrations from the `db/migrations` folder and get the database ready.
 
 ## `.env` file
-Create an `.env` file on the project root folder, containing the following variables, with the values of your local
-environment of choice: 
-```sh
-STAGE=local
-DEV_DB=mysql
-DB_USERNAME=my_user
-DB_PASSWORD=password123
-DB_NAME=atomic_swap_service
+Create an `.env` file on the project root folder, containing all the mandatory variables that can be found on the [`.envexample`](.envexample) file, with the values of your local
+environment of choice.
+
+For a quick start, the following command can be used:
+```shell
+cp .envexample .env
 ```
+
 The `STAGE` variable is especially important on the management of MySql connections on the local/test environment.
 
 ## Starting local environment
